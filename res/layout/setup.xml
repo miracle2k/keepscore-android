@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    <TextView  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:singleLine="true" 
+	    android:text="@string/new_game"
+	    style="@style/Header"	    
+	    />        
+	<Button	
+		android:id="@+id/start_game"
+		android:text="@string/start_game"	
+		android:visibility="gone"	
+		android:layout_gravity="center"		
+		android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="5dp"		
+		/>  
+		      
+	<ListView
+	 	android:id="@+id/existing_players"	 	
+	  	android:layout_width="fill_parent" 	  		  
+	    android:layout_height="0dip"
+	    android:layout_weight="0"	    
+	    />
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"		
+	    android:layout_marginTop="5dp"
+	    >
+		<EditText  
+		 	android:id="@+id/new_player_name"
+		 	android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"	         
+		    />
+		<Button	
+			android:id="@+id/add_new_player"
+			android:layout_gravity="right"		
+			android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+			android:text="@string/submit_short"
+			/>
+	</LinearLayout>	
+		
+	<LinearLayout 
+		android:id="@+id/existing_sessions"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<TextView  
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="@string/existing_sessions"
+		    style="@style/Header"
+		    />    
+		<ListView
+		 	android:id="@+id/existing_sessions_list"
+		  	android:layout_width="fill_parent" 		  	
+	    	android:layout_height="0dip" 
+	    	android:layout_weight="1" />
+	</LinearLayout>
+</LinearLayout>

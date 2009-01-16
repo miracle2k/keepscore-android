@@ -1,0 +1,20 @@
+<resources>
+	<style name="Header" parent="@android:style/Widget.TextView.ListSeparator">
+		<!-- 
+		@android:style/Widget.TextView.ListSeparator in 1.0:
+		
+			<item name="android:background">@android:drawable/settings_header</item>
+	        <item name="android:layout_width">fill_parent</item>
+	        <item name="android:layout_height">27dip</item>
+	        <item name="android:textSize">18sp</item>
+	        <item name="android:textColor">#FF000000</item>
+	        <item name="android:gravity">center_vertical</item>
+	        <item name="android:paddingLeft">5sp</item> 
+        -->
+		<item name="android:textStyle">bold</item>
+		<!-- expand padding to all sides -->
+		<item name="android:padding">5dp</item>
+		<!-- make height dynamic -->
+		<item name="android:layout_height">wrap_content</item>				
+	</style>
+</resources>

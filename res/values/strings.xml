@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, Setup</string>
     <string name="app_name">Keep Score</string>
+    <string name="new_game">New Game</string>
+    <string name="existing_sessions">Previous Games</string>
+    <string name="delete_session">Delete Game</string>
+    <string name="clear_sessions">Clear All Games</string>
+    <string name="clear_players">Clear Players</string>
+    <string name="submit_short">&gt;</string>
+    <string name="start_game">Start Game</string>      
 </resources>
