@@ -38,6 +38,7 @@
 	    >
 		<EditText  
 		 	android:id="@+id/new_player_name"
+		 	android:hint="@string/enter_new_player"
 		 	android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"	         
