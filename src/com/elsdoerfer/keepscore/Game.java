@@ -5,7 +5,9 @@ import java.lang.reflect.Array;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.method.DigitsKeyListener;
+import android.text.method.KeyListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -63,25 +65,57 @@ public class Game extends Activity {
         // create the edit row, allows adding new scores
         TableRow editRow = new TableRow(this);        
         editRow.setPadding(mCellPadding, mCellPadding, mCellPadding, mCellPadding);
-        DigitsKeyListener numericOnlyListener = new DigitsKeyListener(true, false);
         mNewScoreEdits = (EditText[]) Array.newInstance(EditText.class, mPlayers.length);
         mNewScoreValues = (Integer[]) Array.newInstance(Integer.class, mPlayers.length);
         for (int i=0; i<mPlayers.length; i++) {
         	EditText edit = new EditText(this);
         	edit.setGravity(Gravity.CENTER);
-        	edit.setSingleLine(true);
-        	edit.setKeyListener(numericOnlyListener);
-        	edit.setMaxWidth(30);  // TODO: find the right value - is it even necessary?
-        	edit.setOnKeyListener(new View.OnKeyListener() {
+        	// We'd want single-line, most importantly since <enter> would then
+        	// jump to the submit button automatically, but alas, there seems to
+        	// be a bug in Android 1.0 which causes the hint-text not to show 
+        	// if single line is enabled. So for now, don't.
+        	// edit.setSingleLine(true);
+        	
+        	// Columns growing and shrinking while the user is entering text
+        	// can be slow when the game table has lots of rows.
+        	// TODO: Find the best/right value 
+        	edit.setMaxWidth(30);  
+        	
+        	// Use a DigitsKeyListener to only allow digits, plus add some 
+        	// custom key handling. 
+        	edit.setKeyListener(new DigitsKeyListener(true, false) {
+
 				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {					
+				public boolean onKeyDown(View view, Editable text, int keyCode,
+						KeyEvent event) {
+					return super.onKeyDown(view, text, keyCode, event);
+				}
+
+				@Override
+				public boolean onKeyUp(View view, Editable text, int keyCode,
+						KeyEvent event) {
+					// If the user presses enter, jump to the submit button 
+					// below. This is basically copied from 
+					// android.widget.TextView.java. It would be normal 
+					// behavior if single-line where true, but we cannot 
+					// use that due to a bug in Android (hints would not show).
+					switch (keyCode) {
+					case KeyEvent.KEYCODE_ENTER:
+						View v = view.focusSearch(View.FOCUS_DOWN);
+						if (v!=null) v.requestFocus(View.FOCUS_DOWN);
+						return true;
+					}
+										
+					boolean result = super.onKeyUp(view, text, keyCode, event);
+					// update user interface to this change
 					updateUI();
-					return false;
-				}        		
+					return result;
+				}
+        		
         	});
         	edit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
+				public void onFocusChange(View v, boolean hasFocus) {					
 					// Some error messages need to update when the
 					// focus changes, see updateUI comments for more info.
 					updateUI();					
@@ -188,7 +222,6 @@ public class Game extends Activity {
 				// If this is an empty field, provide it with an automatic value 
 				if (scoreEdit.getText().length() == 0) {
 					int suggestedValue = -(sumManualScores / mNumAutomaticValues);
-					scoreEdit.setSingleLine(false); // TODO: need a better solution
 					scoreEdit.setHint(String.valueOf(suggestedValue));  // TODO: support floats								
 					mNewScoreValues[i] = suggestedValue;
 					// If there is only one automatic field left, disable it.
