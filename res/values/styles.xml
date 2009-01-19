@@ -1,4 +1,5 @@
 <resources>
+	
 	<style name="Header" parent="@android:style/Widget.TextView.ListSeparator">
 		<!-- 
 		@android:style/Widget.TextView.ListSeparator in 1.0:
@@ -17,4 +18,5 @@
 		<!-- make height dynamic -->
 		<item name="android:layout_height">wrap_content</item>				
 	</style>
+	
 </resources>

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -60,7 +61,9 @@ public class Setup extends Activity {
         		this, android.R.layout.simple_list_item_1, mListOfPlayersArray);
     	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);        
         
-        // setup events
+        // setup event handlers - we need to refer to the context in some of them 
+    	final Context context = this;
+    	
         mNewPlayerNameText.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -71,6 +74,7 @@ public class Setup extends Activity {
 				return false;
 			}        	
         });
+        
         mAddNewPlayerButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -83,8 +87,7 @@ public class Setup extends Activity {
 				mNewPlayerNameText.requestFocus();				
 			}        	
         });    
-        
-        final Context context = this;
+                
         mExistingPlayersList.setOnItemClickListener(new OnItemClickListener() {
 			@Override			
 			public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
@@ -103,11 +106,13 @@ public class Setup extends Activity {
 			}			     	
         });
         
-        /*mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
+        mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {			
+			public void onClick(View v) {
+				Intent intent = new Intent(context, Game.class);
+				startActivity(intent);
 			}        	
-        });*/
+        });
     }
     
     @Override
