@@ -36,9 +36,13 @@ public class Game extends Activity {
 	protected TableRow mFooterRow;
 	protected EditText[] mNewScoreEdits;
 	
-	// holds the user-entered or automatically calculated 
+	// Holds the user-entered or automatically calculated 
 	// values for the new scores.
 	protected Integer[] mNewScoreValues;
+	
+	// The value the user previously entered. Used 
+	// to prefill the field he enters next.
+	protected CharSequence mLastEnteredValue = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +112,30 @@ public class Game extends Activity {
         	});
         	edit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
-				public void onFocusChange(View v, boolean hasFocus) {					
+				public void onFocusChange(View v, boolean hasFocus) {
+					// When the user enters an edit field, we prefill 
+					// it with the value of the previous field the user
+					// entered text in. This allows for example the 
+					// following workflow: Players A, B, C, D. A and B
+					// get awarded 50 points, C and D lose 50 points.
+					// User focuses edit A, types 50, focuses field B,
+					// field will be set to 50 by this code, user can
+					// add the score right away.
+					EditText edit = (EditText)v;
+					if (edit.isEnabled()) {  // apparently this gets triggered for disabled fields as well?!
+						if (!edit.hasFocus()) {
+							mLastEnteredValue = edit.getText();
+						} else if (mLastEnteredValue != null) {
+							if (edit.getText().length() == 0) {
+								edit.setText(mLastEnteredValue);
+								// TODO: selectAll doesn't have an effect
+								// when entering the field via touch, 
+								// probably because it gets overridden 
+								// right afterwards.
+								edit.selectAll();
+							}
+						}
+					}
 					// Some error messages need to update when the
 					// focus changes, see updateUI comments for more info.
 					updateUI();					
@@ -134,6 +161,7 @@ public class Game extends Activity {
 		        for (int i=0; i<mNewScoreValues.length; i++)	{
 		        	mNewScoreValues[i] = null;
 		        	mNewScoreEdits[i].setText("");
+		        	mLastEnteredValue = null;
 		        }
 		        // update UI		        
 		        //mNewScoreEdits[0].requestFocus();
@@ -230,7 +258,5 @@ public class Game extends Activity {
 	}
 	
 	// TODO: menu options to add: remove last row, leave game
-	
-	// TODO: automatically use last value when entering a new field
 
 }
