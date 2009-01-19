@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.DigitsKeyListener;
-import android.text.method.KeyListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -64,7 +63,6 @@ public class Game extends Activity {
         
         // create the edit row, allows adding new scores
         TableRow editRow = new TableRow(this);        
-        editRow.setPadding(mCellPadding, mCellPadding, mCellPadding, mCellPadding);
         mNewScoreEdits = (EditText[]) Array.newInstance(EditText.class, mPlayers.length);
         mNewScoreValues = (Integer[]) Array.newInstance(Integer.class, mPlayers.length);
         for (int i=0; i<mPlayers.length; i++) {
@@ -74,12 +72,7 @@ public class Game extends Activity {
         	// jump to the submit button automatically, but alas, there seems to
         	// be a bug in Android 1.0 which causes the hint-text not to show 
         	// if single line is enabled. So for now, don't.
-        	// edit.setSingleLine(true);
-        	
-        	// Columns growing and shrinking while the user is entering text
-        	// can be slow when the game table has lots of rows.
-        	// TODO: Find the best/right value 
-        	edit.setMaxWidth(30);  
+        	// edit.setSingleLine(true);         
         	
         	// Use a DigitsKeyListener to only allow digits, plus add some 
         	// custom key handling. 
@@ -239,12 +232,5 @@ public class Game extends Activity {
 	// TODO: menu options to add: remove last row, leave game
 	
 	// TODO: automatically use last value when entering a new field
-	
-    /*
-	 * TODO: add horizontal scrolling:
-	 * 	http://nan-technicalblog.blogspot.com/2008/12/android-how-to-use-horizontal-scrolling.html
-	 *  http://groups.google.com/group/android-developers/browse_thread/thread/bf080f10774979b8/28df4ce43e6b2916?show_docid=28df4ce43e6b2916
-	 *  http://www.anddev.org/scrolling_a_picture_horizontally_and_vertically-t3245.html
-	 */
 
 }
