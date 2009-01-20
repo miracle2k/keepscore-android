@@ -163,15 +163,18 @@ public class Game extends Activity {
 		        	mNewScoreEdits[i].setText("");
 		        	mLastEnteredValue = null;
 		        }
-		        // update UI		        
-		        //mNewScoreEdits[0].requestFocus();
-		        // TODO: for some reason, this still doesn't scroll to the very bottom
-		        mGameScrollView.fullScroll(View.FOCUS_DOWN);
-		        mGameScrollView.scrollBy(0, mAddNewScoresButton.getHeight());
+		        // update UI - for some reason, this is one of the few 
+		        // ways we actually managed to scroll to the very bottom.
+		        // In particular, using "fullScroll(FOCUS_DOWN)" never
+		        // scrolled the submit button fully into view, and neither
+		        // did the non-smooth scrolling methods. 
+		        mGameScrollView.smoothScrollBy(0, mGameScrollView.getHeight());
+		        mNewScoreEdits[0].requestFocus();
 		        updateUI();
 			}
         });
         
+        // initial UI initialization
         updateUI();
 	}
 	
