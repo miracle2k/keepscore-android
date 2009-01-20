@@ -9,6 +9,8 @@ import android.text.Editable;
 import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +27,12 @@ public class Game extends Activity {
 	// resources
 	protected Typeface mBoldFace;
 	protected int mCellPadding;
+	
+	// menu items
+	public static final int REMOVE_LAST_ROW_ID = Menu.FIRST;
+	public static final int END_GAME_ID = Menu.FIRST + 1;	
+	protected MenuItem mRemoveLastRowItem;
+	protected MenuItem mEndGameItem;		
 	
 	// static views
 	protected ScrollView mGameScrollView;
@@ -260,6 +268,25 @@ public class Game extends Activity {
 		mAddNewScoresButton.setEnabled(numManualScores>0);					
 	}
 	
-	// TODO: menu options to add: remove last row, leave game
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
+    	mRemoveLastRowItem = menu.add(0, REMOVE_LAST_ROW_ID, 0, R.string.remove_last_row);
+    	mEndGameItem = menu.add(0, END_GAME_ID, 0, R.string.end_game);
+    	// setup initial visibilities
+        updateUI();
+    	return true;
+    }
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case REMOVE_LAST_ROW_ID:
+    		return true;
+    	case END_GAME_ID:
+    		finish();
+    		return true;
+    	}    	
+    	return false;
+    }
 
 }

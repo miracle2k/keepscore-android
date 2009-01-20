@@ -9,5 +9,7 @@
     <string name="enter_new_player">Enter new player</string>
     <string name="submit_short">&gt;</string>    
     <string name="start_game">Start Game</string>    
-    <string name="not_a_valid_number">Invalid</string> 
+    <string name="not_a_valid_number">Invalid</string>
+    <string name="remove_last_row">Remove Last</string>
+    <string name="end_game">End Game</string>  
 </resources>
