@@ -246,7 +246,7 @@ public class Game extends Activity {
 				// If this is an empty field, provide it with an automatic value 
 				if (scoreEdit.getText().length() == 0) {
 					int suggestedValue = -(sumManualScores / mNumAutomaticValues);
-					scoreEdit.setHint(String.valueOf(suggestedValue));  // TODO: support floats								
+					scoreEdit.setHint(String.valueOf(suggestedValue));								
 					mNewScoreValues[i] = suggestedValue;
 					// If there is only one automatic field left, disable it.
 					// This prevents the user from entering unbalanced values.
