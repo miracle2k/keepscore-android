@@ -1,7 +1,6 @@
 package com.elsdoerfer.keepscore;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,10 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class Setup extends Activity {
 	
-	public static final int CLEAR_PLAYERS_ID = Menu.FIRST;
-	public static final int DELETE_GAME_ID = Menu.FIRST + 1;
-	public static final int CLEAR_GAMES_ID = Menu.FIRST + 2;	
-	
+	// views
 	protected ListView mExistingPlayersList;
 	protected EditText mNewPlayerNameText;
 	protected Button mAddNewPlayerButton;	
@@ -34,13 +30,18 @@ public class Setup extends Activity {
 	protected LinearLayout mExistingSessionsPanel;
 	protected ListView mExistingSessionsList;
 	
+	// menu items
+	public static final int CLEAR_PLAYERS_ID = Menu.FIRST;
+	public static final int DELETE_GAME_ID = Menu.FIRST + 1;
+	public static final int CLEAR_GAMES_ID = Menu.FIRST + 2;	
 	protected MenuItem mClearPlayersItem;
 	protected MenuItem mDeleteGameItem;
 	protected MenuItem mClearGamesItem;	
+		
+	protected ArrayList<String> mListOfPlayersArray;
+	protected ArrayAdapter<String> mListOfPlayersAdapter;
 	
-	
-	protected List<CharSequence> mListOfPlayersArray;
-	protected ArrayAdapter<CharSequence> mListOfPlayersAdapter;
+	public static final String LIST_OF_PLAYERS = "players";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +56,11 @@ public class Setup extends Activity {
         mExistingSessionsPanel = (LinearLayout)findViewById(R.id.existing_sessions);
         mExistingSessionsList = (ListView)findViewById(R.id.existing_sessions_list);
         
-        // stores the list of players of the new game
-        mListOfPlayersArray = new ArrayList<CharSequence>();
-        mListOfPlayersAdapter = new ArrayAdapter<CharSequence>(
+        // prepare the objects that will store the list of players
+        mListOfPlayersArray = savedInstanceState != null 
+        	? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS) 
+        	: new ArrayList<String>();
+        mListOfPlayersAdapter = new ArrayAdapter<String>(
         		this, android.R.layout.simple_list_item_1, mListOfPlayersArray);
     	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);        
         
@@ -78,7 +81,7 @@ public class Setup extends Activity {
         mAddNewPlayerButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				CharSequence playerName = mNewPlayerNameText.getText().toString().trim();
+				String playerName = mNewPlayerNameText.getText().toString().trim();
 				if (playerName.length()==0)
 					return;
 				addPlayerToNewGame(playerName);
@@ -91,7 +94,7 @@ public class Setup extends Activity {
         mExistingPlayersList.setOnItemClickListener(new OnItemClickListener() {
 			@Override			
 			public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-				final CharSequence selectedPlayer = mListOfPlayersAdapter.getItem(position);
+				final String selectedPlayer = mListOfPlayersAdapter.getItem(position);
 				new AlertDialog.Builder(context)
                 	.setIcon(android.R.drawable.ic_dialog_alert)
                 	.setTitle("Remove player \"" + selectedPlayer + "\"?")
@@ -111,9 +114,22 @@ public class Setup extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent(context, Game.class);
 				startActivity(intent);
+				
+				// We assume that the user mostly doesn't want to do
+				// multiple games, and if so, he can easily restart.
+				finish();
 			}        	
         });
+        
+        // initial update
+        playerListChanged();
     }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(LIST_OF_PLAYERS, mListOfPlayersArray);
+    }    
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,7 +156,7 @@ public class Setup extends Activity {
     	return false;
     }
     
-    protected void addPlayerToNewGame(CharSequence playerName) {    	
+    protected void addPlayerToNewGame(String playerName) {    	
     	mListOfPlayersAdapter.add(playerName);
     	playerListChanged();
     }
