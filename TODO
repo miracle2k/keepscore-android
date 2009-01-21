@@ -1,1 +1,6 @@
 - Floats: Currently, only integer values are supported.
+- The session list in landscape mode should put the timestamp
+  to the right of the session label rather than the bottom,
+  to conserve space. However, due to a bug in Android that is
+  not quite as simple as it should be. See the comment in 
+  "res/layout-land/session_list_item.xml" for more information.
