@@ -33,17 +33,18 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
-        public static final int clear_players=0x7f050005;
-        public static final int clear_sessions=0x7f050004;
-        public static final int delete_session=0x7f050003;
-        public static final int end_game=0x7f05000b;
-        public static final int enter_new_player=0x7f050006;
+        public static final int clear_players=0x7f050006;
+        public static final int clear_sessions=0x7f050005;
+        public static final int continue_session=0x7f050003;
+        public static final int delete_session=0x7f050004;
+        public static final int end_game=0x7f05000c;
+        public static final int enter_new_player=0x7f050007;
         public static final int existing_sessions=0x7f050002;
         public static final int new_game=0x7f050001;
-        public static final int not_a_valid_number=0x7f050009;
-        public static final int remove_last_row=0x7f05000a;
-        public static final int start_game=0x7f050008;
-        public static final int submit_short=0x7f050007;
+        public static final int not_a_valid_number=0x7f05000a;
+        public static final int remove_last_row=0x7f05000b;
+        public static final int start_game=0x7f050009;
+        public static final int submit_short=0x7f050008;
     }
     public static final class style {
         public static final int Header=0x7f060000;

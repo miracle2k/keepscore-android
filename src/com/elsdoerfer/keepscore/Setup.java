@@ -9,10 +9,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,8 +39,9 @@ public class Setup extends Activity {
 	
 	// menu items
 	public static final int CLEAR_PLAYERS_ID = Menu.FIRST;
-	public static final int DELETE_GAME_ID = Menu.FIRST + 1;
-	public static final int CLEAR_GAMES_ID = Menu.FIRST + 2;	
+	public static final int CONTINUE_GAME_ID = Menu.FIRST + 1;
+	public static final int DELETE_GAME_ID = Menu.FIRST + 2;
+	public static final int CLEAR_GAMES_ID = Menu.FIRST + 3;	
 	protected MenuItem mClearPlayersItem;
 	protected MenuItem mDeleteGameItem;
 	protected MenuItem mClearGamesItem;	
@@ -52,8 +55,9 @@ public class Setup extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
-        setContentView(R.layout.setup);    
+        setContentView(R.layout.setup);          
         
+        // open database
         mDb = new DbAdapter(this);
         mDb.open();
         
@@ -65,7 +69,7 @@ public class Setup extends Activity {
         mExistingSessionsPanel = (LinearLayout)findViewById(R.id.existing_sessions);
         mExistingSessionsList = (ListView)findViewById(R.id.existing_sessions_list);
         
-        // prepare the objects that will store the list of players
+        // prepare the list of players for a new session
         mListOfPlayersArray = savedInstanceState != null 
         	? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS) 
         	: new ArrayList<String>();
@@ -73,6 +77,7 @@ public class Setup extends Activity {
         		this, android.R.layout.simple_list_item_1, mListOfPlayersArray);
     	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);    	
     	
+    	// prepare the list of existing sessions
     	final Cursor existingSessionListCursor = mDb.fetchAllSessions();
     	startManagingCursor(existingSessionListCursor);
     	mExistingSessionsAdapter = 
@@ -80,10 +85,12 @@ public class Setup extends Activity {
     				this, android.R.layout.simple_list_item_1, 
     				existingSessionListCursor, 
     				new String[] { "label" },  new int[] { android.R.id.text1 });
-    	mExistingSessionsList.setAdapter(mExistingSessionsAdapter);
+    	mExistingSessionsList.setAdapter(mExistingSessionsAdapter);        
         
         // setup event handlers - we need to refer to the context in some of them 
     	final Context context = this;
+    	
+    	this.registerForContextMenu(mExistingSessionsList);
     	
         mNewPlayerNameText.setOnKeyListener(new View.OnKeyListener() {
 			@Override
@@ -146,22 +153,19 @@ public class Setup extends Activity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (mDeleteGameItem!=null)
-					mDeleteGameItem.setEnabled(true);
+				sessionListSelectionChanged();
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				if (mDeleteGameItem!=null)
-					mDeleteGameItem.setEnabled(false);				
+				sessionListSelectionChanged();
 			}        
-        });
+        });        
         
         mExistingSessionsList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(context, Game.class);
-				startActivity(intent);					
+				continueSession(0);		
 			}        	
         });
         
@@ -183,15 +187,14 @@ public class Setup extends Activity {
     	mClearGamesItem = menu.add(0, CLEAR_GAMES_ID, 0, R.string.clear_sessions);
     	// setup initial visibilities
     	updateUI();
+    	sessionListSelectionChanged();
     	return true;
     }
     
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case DELETE_GAME_ID:
-    		mDb.deleteSession(mExistingSessionsList.getSelectedItemId());
-    		mExistingSessionsAdapter.getCursor().requery();
-    		updateUI();
+    		deleteSession(mExistingSessionsList.getSelectedItemId());    		
     		return true;
     	case CLEAR_GAMES_ID:
     		new AlertDialog.Builder(this)
@@ -215,9 +218,43 @@ public class Setup extends Activity {
     	return false;
     }
     
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        menu.add(R.string.continue_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				continueSession(info.id);				
+				return true;
+			}        		
+    	});
+        menu.add(R.string.delete_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				deleteSession(info.id);
+				return true;
+			}        		
+    	});                
+    }    
+    
     protected void addPlayerToNewGame(String playerName) {    	
     	mListOfPlayersAdapter.add(playerName);
     	updateUI();
+    }   
+    
+    protected void continueSession(long id) {
+    	Intent intent = new Intent(this, Game.class);
+		startActivity(intent);			
+    }
+    
+    protected void deleteSession(long id) {
+		mDb.deleteSession(id);
+		mExistingSessionsAdapter.getCursor().requery();
+		updateUI();    	
+    }
+    
+    protected void sessionListSelectionChanged() {
+		if (mDeleteGameItem!=null)			
+			mDeleteGameItem.setEnabled(mExistingSessionsList.getSelectedItem() != null);
     }
     
     protected void updateUI() {    	
