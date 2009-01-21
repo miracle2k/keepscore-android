@@ -12,5 +12,10 @@
     <string name="start_game">Start Game</string>    
     <string name="not_a_valid_number">Invalid</string>
     <string name="remove_last_row">Remove Last</string>
-    <string name="end_game">End Game</string>  
+    <string name="end_game">End Game</string>
+    <string name="never">Never</string>
+    <string name="just_now">Just Now</string>
+    <string name="bind_days">%s minutes ago</string>
+    <string name="bind_hours">%s hours ago</string>
+    <string name="bind_minutes">%s minutes ago</string>  
 </resources>

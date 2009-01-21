@@ -1,6 +1,8 @@
 package com.elsdoerfer.keepscore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,8 +24,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class Setup extends Activity {
 	
@@ -82,10 +86,49 @@ public class Setup extends Activity {
     	startManagingCursor(existingSessionListCursor);
     	mExistingSessionsAdapter = 
     		new SimpleCursorAdapter(
-    				this, android.R.layout.simple_list_item_1, 
+    				this, R.layout.session_list_item, 
     				existingSessionListCursor, 
-    				new String[] { "label" },  new int[] { android.R.id.text1 });
-    	mExistingSessionsList.setAdapter(mExistingSessionsAdapter);        
+    				new String[] { "label", "last_played_at" },  
+    				new int[] { android.R.id.text1, android.R.id.text2 });
+    	mExistingSessionsAdapter.setViewBinder(new ViewBinder() {
+			@Override
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex)  {
+				int lastPlayedIndex = cursor.getColumnIndex("last_played_at"); 
+				if (columnIndex == lastPlayedIndex) {					
+					long now = new Date().getTime() / 1000;
+					long lastPlayed = cursor.getLong(lastPlayedIndex) / 1000;				
+		            
+					// This code was adapted from http://code.google.com/p/connectbot/ 
+		            String nice = getString(R.string.never);
+		            if (lastPlayed > 0) {
+		            	int minutes = (int)((now - lastPlayed) / 60);		                
+		                if (minutes >= 60) {
+		                	int hours = (minutes / 60);		                            
+                            if (hours >= 24) {
+                            	int days = (hours / 24);
+                            	if (days > 30) {
+                            		nice = new SimpleDateFormat("dd. MMM yyyy, HH:mm").
+                            			format(new Date(lastPlayed));	
+                            	}
+                            	else
+                            		nice = getString(R.string.bind_days, days);
+                            }
+                            else
+                            	nice = getString(R.string.bind_hours, hours);
+		                } 
+		                else if (minutes == 0)
+		                	nice = getString(R.string.just_now);
+		                else
+		                	nice = getString(R.string.bind_minutes, minutes);
+		            }
+										
+					((TextView)view).setText(nice);
+					return true; 
+				}  
+				return false;
+			}
+    	});
+    	mExistingSessionsList.setAdapter(mExistingSessionsAdapter);      	
         
         // setup event handlers - we need to refer to the context in some of them 
     	final Context context = this;
