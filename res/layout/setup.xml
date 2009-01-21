@@ -54,7 +54,8 @@
 		
 	<LinearLayout 
 		android:id="@+id/existing_sessions"
-		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_height="fill_parent"
 		android:layout_width="fill_parent">
 		<TextView  
 		    android:layout_width="fill_parent" 
@@ -64,8 +65,8 @@
 		    />    
 		<ListView
 		 	android:id="@+id/existing_sessions_list"
-		  	android:layout_width="fill_parent" 		  	
-	    	android:layout_height="0dip" 
+		  	android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent" 
 	    	android:layout_weight="1" />
 	</LinearLayout>
 </LinearLayout>

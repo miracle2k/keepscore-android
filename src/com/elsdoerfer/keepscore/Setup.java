@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,9 +19,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class Setup extends Activity {
+	
+	DbAdapter mDb = new DbAdapter(this);
 	
 	// views
 	protected ListView mExistingPlayersList;
@@ -40,13 +45,17 @@ public class Setup extends Activity {
 		
 	protected ArrayList<String> mListOfPlayersArray;
 	protected ArrayAdapter<String> mListOfPlayersAdapter;
+	protected SimpleCursorAdapter mExistingSessionsAdapter;
 	
 	public static final String LIST_OF_PLAYERS = "players";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.setup);        
+        super.onCreate(savedInstanceState);        
+        setContentView(R.layout.setup);    
+        
+        mDb = new DbAdapter(this);
+        mDb.open();
         
         // get views
         mExistingPlayersList = (ListView)findViewById(R.id.existing_players);
@@ -62,7 +71,16 @@ public class Setup extends Activity {
         	: new ArrayList<String>();
         mListOfPlayersAdapter = new ArrayAdapter<String>(
         		this, android.R.layout.simple_list_item_1, mListOfPlayersArray);
-    	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);        
+    	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);    	
+    	
+    	final Cursor existingSessionListCursor = mDb.fetchAllSessions();
+    	startManagingCursor(existingSessionListCursor);
+    	mExistingSessionsAdapter = 
+    		new SimpleCursorAdapter(
+    				this, android.R.layout.simple_list_item_1, 
+    				existingSessionListCursor, 
+    				new String[] { "label" },  new int[] { android.R.id.text1 });
+    	mExistingSessionsList.setAdapter(mExistingSessionsAdapter);
         
         // setup event handlers - we need to refer to the context in some of them 
     	final Context context = this;
@@ -101,7 +119,7 @@ public class Setup extends Activity {
                 	.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 		public void onClick(DialogInterface dialog, int whichButton) {
                 			mListOfPlayersAdapter.remove(selectedPlayer);
-                			playerListChanged();
+                			updateUI();
                 		}
                 	})
                 	.setNegativeButton("No", null)
@@ -112,17 +130,43 @@ public class Setup extends Activity {
         mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
+				existingSessionListCursor.requery();
+				
 				Intent intent = new Intent(context, Game.class);
 				startActivity(intent);
-				
-				// We assume that the user mostly doesn't want to do
-				// multiple games, and if so, he can easily restart.
-				finish();
+														
+				mNewPlayerNameText.setText("");
+				mListOfPlayersAdapter.clear();
+				updateUI();				
+			}        	
+        });
+        
+        mExistingSessionsList.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (mDeleteGameItem!=null)
+					mDeleteGameItem.setEnabled(true);
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				if (mDeleteGameItem!=null)
+					mDeleteGameItem.setEnabled(false);				
+			}        
+        });
+        
+        mExistingSessionsList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent(context, Game.class);
+				startActivity(intent);					
 			}        	
         });
         
         // initial update
-        playerListChanged();
+        updateUI();
     }
     
     @Override
@@ -138,19 +182,34 @@ public class Setup extends Activity {
     	mDeleteGameItem = menu.add(0, DELETE_GAME_ID, 0, R.string.delete_session);
     	mClearGamesItem = menu.add(0, CLEAR_GAMES_ID, 0, R.string.clear_sessions);
     	// setup initial visibilities
-        playerListChanged();
+    	updateUI();
     	return true;
     }
     
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case DELETE_GAME_ID:
+    		mDb.deleteSession(mExistingSessionsList.getSelectedItemId());
+    		mExistingSessionsAdapter.getCursor().requery();
+    		updateUI();
     		return true;
     	case CLEAR_GAMES_ID:
+    		new AlertDialog.Builder(this)
+        	.setIcon(android.R.drawable.ic_dialog_alert)
+        	.setTitle("This will permanently remove all saved sessions. Are you sure?")
+        	.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        		public void onClick(DialogInterface dialog, int whichButton) {
+        			mDb.clearSessions();
+            		mExistingSessionsAdapter.getCursor().requery();
+            		updateUI();
+        		}
+        	})
+        	.setNegativeButton("No", null)
+        	.create().show();    		
     		return true;
     	case CLEAR_PLAYERS_ID:
     		mListOfPlayersAdapter.clear();
-    		playerListChanged();
+    		updateUI();
     		return true;
     	}
     	return false;
@@ -158,10 +217,10 @@ public class Setup extends Activity {
     
     protected void addPlayerToNewGame(String playerName) {    	
     	mListOfPlayersAdapter.add(playerName);
-    	playerListChanged();
+    	updateUI();
     }
     
-    protected void playerListChanged() {    	
+    protected void updateUI() {    	
     	// Hide "existing session" list once the user starts to add
     	// players for a new game. This is mostly for layout reasons,
     	// because we apparently can't really have two lists in the 
@@ -188,17 +247,23 @@ public class Setup extends Activity {
     		LinearLayout.LayoutParams params;
             params = (LinearLayout.LayoutParams) mExistingPlayersList.getLayoutParams();
             params.weight = 0;
-            mExistingPlayersList.setLayoutParams(params);                      
-
-            mExistingSessionsPanel.setVisibility(View.VISIBLE);
-    	}
+            mExistingPlayersList.setLayoutParams(params);
+            
+        	// Also hide the whole sessions panel if there aren't any sessions
+        	if (mExistingSessionsAdapter.isEmpty())
+        		mExistingSessionsPanel.setVisibility(View.GONE);
+        	else
+        		mExistingSessionsPanel.setVisibility(View.VISIBLE);
+    	}    
     	
-        // Show/Hide menu items depending on the features 
+        // Show/hide/enable menu items depending on the features 
     	// and controls  currently visible. 
     	if (mDeleteGameItem != null) {   // Menu might not have been created yet
-	        boolean editingPlayers = !mListOfPlayersAdapter.isEmpty();        
+	        boolean editingPlayers = !mListOfPlayersAdapter.isEmpty();
+	        boolean sessionsExist = !mExistingSessionsAdapter.isEmpty();
 	        mDeleteGameItem.setVisible(!editingPlayers);
 	        mClearGamesItem.setVisible(!editingPlayers);
+	        mClearGamesItem.setEnabled(sessionsExist);
 	        mClearPlayersItem.setVisible(editingPlayers);
     	}
     	
