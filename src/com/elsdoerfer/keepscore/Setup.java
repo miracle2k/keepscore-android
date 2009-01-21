@@ -96,7 +96,7 @@ public class Setup extends Activity {
         	? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS) 
         	: new ArrayList<String>();
         mListOfPlayersAdapter = new ArrayAdapter<String>(
-        		this, android.R.layout.simple_list_item_1, mListOfPlayersArray);
+        		this, R.layout.player_list_item, mListOfPlayersArray);
     	mExistingPlayersList.setAdapter(mListOfPlayersAdapter);    	
     	
     	// prepare the list of existing sessions
