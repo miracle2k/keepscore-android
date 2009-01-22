@@ -47,9 +47,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class Setup extends Activity {
-	
-	DbAdapter mDb = new DbAdapter(this);
+public class Setup extends Activity {	
 	
 	// views
 	protected ListView mExistingPlayersList;
@@ -68,11 +66,15 @@ public class Setup extends Activity {
 	protected MenuItem mDeleteGameItem;
 	protected MenuItem mClearGamesItem;	
 		
+	DbAdapter mDb = new DbAdapter(this);
+	
+	// list objects/data
 	protected ArrayList<String> mListOfPlayersArray;
 	protected ArrayAdapter<String> mListOfPlayersAdapter;
 	protected SimpleCursorAdapter mExistingSessionsAdapter;
 	
-	public static final String LIST_OF_PLAYERS = "players";
+	// storage keys
+	public static final String LIST_OF_PLAYERS_KEY = "players";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +95,7 @@ public class Setup extends Activity {
         
         // prepare the list of players for a new session
         mListOfPlayersArray = savedInstanceState != null 
-        	? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS) 
+        	? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS_KEY) 
         	: new ArrayList<String>();
         mListOfPlayersAdapter = new ArrayAdapter<String>(
         		this, R.layout.player_list_item, mListOfPlayersArray);
@@ -198,12 +200,13 @@ public class Setup extends Activity {
         mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
-				existingSessionListCursor.requery();
+				long newId = mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
+				existingSessionListCursor.requery();				
+				continueSession(newId);
 				
-				Intent intent = new Intent(context, Game.class);
-				startActivity(intent);
-														
+				// TODO: The user wills till see how the interface resets, 
+				// while the new activity is being loaded - not particularly 
+				// nice. Do something about it.
 				mNewPlayerNameText.setText("");
 				mListOfPlayersAdapter.clear();
 				updateUI();				
@@ -226,7 +229,7 @@ public class Setup extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				continueSession(0);		
+				continueSession(id);		
 			}        	
         });
         
@@ -237,7 +240,7 @@ public class Setup extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArrayList(LIST_OF_PLAYERS, mListOfPlayersArray);
+        outState.putStringArrayList(LIST_OF_PLAYERS_KEY, mListOfPlayersArray);
     }    
     
     @Override
@@ -280,7 +283,8 @@ public class Setup extends Activity {
     }
     
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;        
+        menu.setHeaderTitle(((TextView)info.targetView.findViewById(android.R.id.text1)).getText());
         menu.add(R.string.continue_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
@@ -304,6 +308,7 @@ public class Setup extends Activity {
     
     protected void continueSession(long id) {
     	Intent intent = new Intent(this, Game.class);
+    	intent.putExtra(DbAdapter.SESSION_ID_KEY, id);
 		startActivity(intent);			
     }
     

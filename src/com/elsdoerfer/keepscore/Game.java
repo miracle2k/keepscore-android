@@ -21,6 +21,7 @@ package com.elsdoerfer.keepscore;
 import java.lang.reflect.Array;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,10 +38,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class Game extends Activity {
-	
-	protected static CharSequence[] mPlayers = 
-		{"Michael", "Peter", "Paul", "Sebastian"}; 
+public class Game extends Activity {	
 	
 	// resources
 	protected Typeface mBoldFace;
@@ -62,18 +60,42 @@ public class Game extends Activity {
 	protected TableRow mFooterRow;
 	protected EditText[] mNewScoreEdits;
 	
+	DbAdapter mDb = new DbAdapter(this);
+	
+	// the session we are currently playing
+	protected Long mSessionId;	
+	// the sessions data, stored temporary in local memory
+	protected CharSequence[] mPlayers = 
+	{"Michael", "Peter", "Paul", "Sebastian"};
+	
 	// Holds the user-entered or automatically calculated 
-	// values for the new scores.
+	// values for the next new row scores.
 	protected Integer[] mNewScoreValues;
 	
-	// The value the user previously entered. Used 
-	// to prefill the field he enters next.
+	// The value the user previously entered into a score field. 
+	// Used  to prefill the fields he might enter next with a default.
 	protected CharSequence mLastEnteredValue = null;
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
+        
+        // setup database connection
+        mDb = new DbAdapter(this);
+        mDb.open();        
+        
+        // initialize data from state bundle or passed row
+        mSessionId = savedInstanceState != null 
+        	? savedInstanceState.getLong(DbAdapter.SESSION_ID_KEY)
+        	: null;        
+        if (mSessionId == null) {
+        	Bundle extras = getIntent().getExtras();
+        	mSessionId = extras.getLong(DbAdapter.SESSION_ID_KEY);
+        }
+        
+        // load list of players for this game
+        mPlayers = mDb.fetchSessionPlayerNames(mSessionId);        
         
         // get views
         mGameScrollView = (ScrollView)findViewById(R.id.game_container);
@@ -81,7 +103,7 @@ public class Game extends Activity {
         mAddNewScoresButton = (Button)findViewById(R.id.add_new_scores);
         TableRow.LayoutParams params = (TableRow.LayoutParams)mAddNewScoresButton.getLayoutParams();
         params.span = mPlayers.length;
-        mAddNewScoresButton.setLayoutParams(params);
+        mAddNewScoresButton.setLayoutParams(params);       
                 
         // load resources
         mBoldFace = Typeface.defaultFromStyle(Typeface.BOLD);
@@ -171,7 +193,31 @@ public class Game extends Activity {
         	mNewScoreEdits[i] = edit;
         	mNewScoreValues[i] = null;
         }
-        mGameTable.addView(editRow, 1);                     
+        mGameTable.addView(editRow, 1); 
+        
+        // add existing data rows
+        Cursor scoreStream = mDb.fetchSessionScores(mSessionId);
+        if (scoreStream.getCount() > 0) {
+	        scoreStream.moveToFirst();
+	        Integer[] currentRow = new Integer[mPlayers.length];
+	        Integer currentPos = 0;
+	        do {
+	        	currentRow[currentPos] = scoreStream.getInt(0);
+	        	currentPos++;
+	        	if (currentPos == currentRow.length) {
+	        		insertScoreRow(makeTextRow(currentRow, false));
+	        		currentPos = 0;
+	        	}
+	        } while (scoreStream.moveToNext());
+	        if (currentPos != 0) {
+	        	// Something is wrong with the database, 
+	        	// there was an invalid number of tokens 
+	        	// in the stream. This shouldn't happen.
+	        	throw new java.lang.IndexOutOfBoundsException(
+	        			"Score stream ended unexpectedly. The " +
+	        			"session data is faulty.");       	
+	        }
+        }        
         
         // setup event handlers     
         mAddNewScoresButton.setOnClickListener(new View.OnClickListener() {
@@ -181,14 +227,16 @@ public class Game extends Activity {
 				// We trust that mNewScoreValues contains no null values.
 				// The submit button should not be enabled if this is not
 				// the case.
-		        TableRow newRow = makeTextRow(mNewScoreValues, false);
-		        mGameTable.addView(newRow, mGameTable.getChildCount()-2);
+				mDb.addSessionScores(mSessionId, mNewScoreValues);
+				insertScoreRow(makeTextRow(mNewScoreValues, false));		        
+		        
 		        // clear existing input values.
 		        for (int i=0; i<mNewScoreValues.length; i++)	{
 		        	mNewScoreValues[i] = null;
 		        	mNewScoreEdits[i].setText("");
 		        	mLastEnteredValue = null;
 		        }
+		        
 		        // update UI - for some reason, this is one of the few 
 		        // ways we actually managed to scroll to the very bottom.
 		        // In particular, using "fullScroll(FOCUS_DOWN)" never
@@ -198,12 +246,32 @@ public class Game extends Activity {
 		        mNewScoreEdits[0].requestFocus();
 		        updateUI();
 			}
-        });
+        });       
         
         // initial UI initialization
         updateUI();
 	}
 	
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(DbAdapter.SESSION_ID_KEY, mSessionId);
+        // TODO: save edit field state
+    }    
+		
+		
+    @Override
+    protected void onPause() {   
+    	super.onPause();
+		mDb.updateSessionTimestamp(mSessionId);
+    }
+    
+    @Override
+    protected void onResume() {   
+    	super.onResume();
+		mDb.updateSessionTimestamp(mSessionId);
+    }
+			
 	/**
 	 * Make a new row of TextView objects that can be added to the
 	 * table.
@@ -222,6 +290,11 @@ public class Game extends Activity {
         	newRow.addView(text);        	
         }
         return newRow;
+	}
+	
+	protected void insertScoreRow(TableRow row) {
+		mGameTable.addView(row, mGameTable.getChildCount()-2);
+		// TODO: add player name header once there are X rows
 	}
 	
 	protected void updateUI() {

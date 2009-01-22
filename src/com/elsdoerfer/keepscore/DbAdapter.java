@@ -31,22 +31,22 @@ public class DbAdapter {
 	
 	///////////////////////////////////////////////////////////////
 	
-	private static String SESSION_TABLE = "session";
-	private static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";
-	private static String SESSION_ID_KEY = "_id";
+	public static String SESSION_TABLE = "session";
+	public static String SESSION_ID_KEY = "_id";
+	public static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";	
 	
-	private static String PLAYER_TABLE = "player";
-	private static String PLAYER_ID_KEY = "_id";
-	private static String PLAYER_SESSION_KEY = "session_id";
-	private static String PLAYER_NAME_KEY = "name";
-	private static String PLAYER_INDEX_KEY = "idx";
+	public static String PLAYER_TABLE = "player";
+	public static String PLAYER_ID_KEY = "_id";
+	public static String PLAYER_SESSION_KEY = "session_id";
+	public static String PLAYER_NAME_KEY = "name";
+	public static String PLAYER_INDEX_KEY = "idx";
 	
-	private static String SCORE_TABLE = "score";
-	private static String SCORE_ID_KEY = "_id";
-	private static String SCORE_SESSION_KEY = "session_id";
-	private static String SCORE_PLAYER_INDEX_KEY = "player_index";
-	private static String SCORE_VALUE_KEY = "value";
-	private static String SCORE_CREATED_AT_KEY = "created_at";
+	public static String SCORE_TABLE = "score";
+	public static String SCORE_ID_KEY = "_id";
+	public static String SCORE_SESSION_KEY = "session_id";
+	public static String SCORE_PLAYER_INDEX_KEY = "player_index";
+	public static String SCORE_VALUE_KEY = "value";
+	public static String SCORE_CREATED_AT_KEY = "created_at";
 	
 	private static final String[] DATABASE_CREATE = {
         "CREATE TABLE session (_id INTEGER PRIMARY KEY AUTOINCREMENT, " + 
@@ -147,18 +147,49 @@ public class DbAdapter {
 		     "ORDER BY last_played_at DESC", null);      
     }
     
-    public Cursor fetchSession(int sessionId) {
-    	Cursor mCursor =  mDb.rawQuery(    			
-			 "SELECT _id, GROUP_CONCAT(name, ', ') AS label, last_played_at "+
-			 "FROM (SELECT session._id AS _id, last_played_at, player.name AS name FROM session "+
-		     "      LEFT OUTER JOIN player ON session._id = player.session_id "+
-		     "      ORDER BY player.idx ASC) " +
-		     "GROUP BY _id "+
-		     "ORDER BY last_played_at DESC", null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
+    public String[] fetchSessionPlayerNames(long sessionId) {
+    	Cursor cursor = mDb.query(PLAYER_TABLE, new String[]{PLAYER_NAME_KEY}, 
+    			PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
+    			null, null, PLAYER_INDEX_KEY + " ASC");    	
+    	String[] result = new String[cursor.getCount()];
+    	cursor.moveToFirst();
+    	do {
+    		result[cursor.getPosition()] = cursor.getString(0);
+    	} while (cursor.moveToNext());
+        return result;
+    }
+    
+    public boolean updateSessionTimestamp(long sessionId) {
+    	ContentValues args = new ContentValues();
+        args.put(SESSION_LAST_PLAYED_AT_KEY, new Date().getTime());
+        return mDb.update(SESSION_TABLE, args, SESSION_ID_KEY + "=" + sessionId, null) > 0;	
+    }
+    
+    public void addSessionScores(long sessionId, Integer[] scores) {
+    	// We trust that "scores" has the right size for this 
+    	// session, and that the corresponding player "index" 
+    	// values in the session go from 0 to [length].
+    	mDb.beginTransaction();
+    	try {
+    		for (int i=0; i<scores.length; i++) {
+	    		ContentValues values = new ContentValues();	    		
+	    		values.put(SCORE_SESSION_KEY, sessionId);
+	    		values.put(SCORE_PLAYER_INDEX_KEY, i);	    			    		
+	    		values.put(SCORE_VALUE_KEY, scores[i]);
+	    		values.put(SCORE_CREATED_AT_KEY, new Date().getTime());
+	    		mDb.insert(SCORE_TABLE, null, values);    			
+    		}    		
+    		mDb.setTransactionSuccessful();
+    	}
+    	finally {
+    		mDb.endTransaction();
+    	}
+    }
+    
+    public Cursor fetchSessionScores(long sessionId) {
+    	return mDb.query(SCORE_TABLE, new String[]{SCORE_VALUE_KEY}, 
+    			SCORE_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
+    			null, null, SCORE_CREATED_AT_KEY + " ASC, " + SCORE_PLAYER_INDEX_KEY + " ASC");    		
     }
     
     public void deleteSession(long sessionId) {
