@@ -19,6 +19,7 @@
 package com.elsdoerfer.keepscore;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -64,9 +65,9 @@ public class Game extends Activity {
 	
 	// the session we are currently playing
 	protected Long mSessionId;	
-	// the sessions data, stored temporary in local memory
-	protected CharSequence[] mPlayers = 
-	{"Michael", "Peter", "Paul", "Sebastian"};
+	// the session's data, stored temporary in local memory
+	protected String[] mPlayers;
+	protected ArrayList<Integer[]> mScoreMatrix;
 	
 	// Holds the user-entered or automatically calculated 
 	// values for the next new row scores.
@@ -195,6 +196,8 @@ public class Game extends Activity {
         }
         mGameTable.addView(editRow, 1); 
         
+        mScoreMatrix = new ArrayList<Integer[]>();
+        
         // add existing data rows
         Cursor scoreStream = mDb.fetchSessionScores(mSessionId);
         if (scoreStream.getCount() > 0) {
@@ -205,7 +208,7 @@ public class Game extends Activity {
 	        	currentRow[currentPos] = scoreStream.getInt(0);
 	        	currentPos++;
 	        	if (currentPos == currentRow.length) {
-	        		insertScoreRow(makeTextRow(currentRow, false));
+	        		insertScoreRow(currentRow);
 	        		currentPos = 0;
 	        	}
 	        } while (scoreStream.moveToNext());
@@ -228,7 +231,7 @@ public class Game extends Activity {
 				// The submit button should not be enabled if this is not
 				// the case.
 				mDb.addSessionScores(mSessionId, mNewScoreValues);
-				insertScoreRow(makeTextRow(mNewScoreValues, false));		        
+				insertScoreRow(mNewScoreValues);		        
 		        
 		        // clear existing input values.
 		        for (int i=0; i<mNewScoreValues.length; i++)	{
@@ -292,8 +295,24 @@ public class Game extends Activity {
         return newRow;
 	}
 	
-	protected void insertScoreRow(TableRow row) {
-		mGameTable.addView(row, mGameTable.getChildCount()-2);
+	protected void insertScoreRow(Integer[] scores) {
+		scores = scores.clone();  // copy, to allow caller to reuse his object 
+		mScoreMatrix.add(scores);
+		
+		// "scores" is the latest change, but we need to display 
+		// the  current sum for each player, so create an error 
+		// that contains the updated sum values.						
+		Integer[] currentSums = new Integer[scores.length];
+		for (int i=0; i<mScoreMatrix.size(); i++) {
+			Integer[] aRow = mScoreMatrix.get(i);
+			for (int j=0; j<aRow.length; j++)
+				if (currentSums[j] == null)
+					currentSums[j] = aRow[j];
+				else 
+					currentSums[j] += aRow[j];
+		}		
+		mGameTable.addView(makeTextRow(currentSums, false), 
+				           mGameTable.getChildCount()-2);
 		// TODO: add player name header once there are X rows
 	}
 	
