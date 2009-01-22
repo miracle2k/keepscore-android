@@ -194,6 +194,11 @@ public class DbAdapter {
     	}
     }
     
+    public boolean removeSessionScores(long sessionId, Integer rowNum) {
+    	return mDb.delete(SCORE_TABLE, SCORE_SESSION_KEY + "= ? AND " + SCORE_ROW_KEY + " = ?", 
+    			new String[]{String.valueOf(sessionId), String.valueOf(rowNum)})>0;   
+    }    
+    
     public Cursor fetchSessionScores(long sessionId) {
     	return mDb.query(SCORE_TABLE, new String[]{SCORE_VALUE_KEY}, 
     			SCORE_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 

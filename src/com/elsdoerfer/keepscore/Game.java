@@ -325,12 +325,9 @@ public class Game extends Activity {
 				else 
 					currentSums[j] += aRow[j];
 		}	
-		
-		// The position where we insert new score rows changes 
-		// depending on whether we have a footer or not.		
+			
 		mGameTable.addView(makeTextRow(currentSums, false), 
-				           mGameTable.getChildCount()-
-				           		(mScoreMatrix.size() > NUM_ROWS_FOR_FOOTER ? 3 : 2));
+				           getInsertPosition());
 		
 		// After a certain number of rounds, repeat the player 
 		// names at the bottom. We could also insert something
@@ -341,6 +338,13 @@ public class Game extends Activity {
 			mGameTable.addView(makeTextRow(mPlayers, true), 
 					           mGameTable.getChildCount()-2);
 		}
+	}
+	
+	protected int getInsertPosition() {
+		// The position where we insert new score rows changes 
+		// depending on whether we have a footer or not.
+		return mGameTable.getChildCount()-
+   			      (mScoreMatrix.size() > NUM_ROWS_FOR_FOOTER ? 3 : 2);
 	}
 	
 	protected void updateUI() {
@@ -414,7 +418,11 @@ public class Game extends Activity {
 		}
 
 		// enable submit button if the user provided at least one score
-		mAddNewScoresButton.setEnabled(numManualScores>0);					
+		mAddNewScoresButton.setEnabled(numManualScores>0);	
+		
+		// can only remove a row if there actually is one
+		if (mRemoveLastRowItem!=null)
+			mRemoveLastRowItem.setEnabled(mScoreMatrix.size()>0);
 	}
 	
     @Override
@@ -430,6 +438,20 @@ public class Game extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case REMOVE_LAST_ROW_ID:
+    		Integer[] lastRow = mScoreMatrix.get(mScoreMatrix.size()-1);
+    		// Attention! The order of the following calls is vital, 
+    		// since each affects the indexes that the others are using.
+    		if (mScoreMatrix.size() == NUM_ROWS_FOR_FOOTER)
+    			// need to make sure that we remove the footer at 
+    			// the right moment as well
+    			mGameTable.removeViewAt(mGameTable.getChildCount()-3);
+    		// Note: assumes that the row ids in the database 
+    		// match the row indices here. as long as rows are 
+    		// not removed in between, this should be true.    		
+    		mDb.removeSessionScores(mSessionId, getInsertPosition()-1);
+    		mGameTable.removeViewAt(getInsertPosition()-1);    		
+    		mScoreMatrix.remove(lastRow);
+    		
     		return true;
     	case END_GAME_ID:
     		finish();
