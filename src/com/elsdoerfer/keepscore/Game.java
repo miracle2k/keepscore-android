@@ -215,27 +215,32 @@ public class Game extends Activity {
         
         // add existing data rows
         Cursor scoreStream = mDb.fetchSessionScores(mSessionId);
-        if (scoreStream.getCount() > 0) {
-	        scoreStream.moveToFirst();
-	        Integer[] currentRow = new Integer[mPlayers.length];
-	        Integer currentPos = 0;
-	        do {
-	        	currentRow[currentPos] = scoreStream.getInt(0);
-	        	currentPos++;
-	        	if (currentPos == currentRow.length) {
-	        		insertScoreRow(currentRow);
-	        		currentPos = 0;
-	        	}
-	        } while (scoreStream.moveToNext());
-	        if (currentPos != 0) {
-	        	// Something is wrong with the database, 
-	        	// there was an invalid number of tokens 
-	        	// in the stream. This shouldn't happen.
-	        	throw new java.lang.IndexOutOfBoundsException(
-	        			"Score stream ended unexpectedly. The " +
-	        			"session data is faulty.");       	
+        try {
+	        if (scoreStream.getCount() > 0) {
+		        scoreStream.moveToFirst();
+		        Integer[] currentRow = new Integer[mPlayers.length];
+		        Integer currentPos = 0;
+		        do {
+		        	currentRow[currentPos] = scoreStream.getInt(0);
+		        	currentPos++;
+		        	if (currentPos == currentRow.length) {
+		        		insertScoreRow(currentRow);
+		        		currentPos = 0;
+		        	}
+		        } while (scoreStream.moveToNext());
+		        if (currentPos != 0) {
+		        	// Something is wrong with the database, 
+		        	// there was an invalid number of tokens 
+		        	// in the stream. This shouldn't happen.
+		        	throw new java.lang.IndexOutOfBoundsException(
+		        			"Score stream ended unexpectedly. The " +
+		        			"session data is faulty.");       	
+		        }
 	        }
-        }        
+        }
+	    finally {
+	    	scoreStream.close();
+	    }
         
         // setup event handlers     
         mAddNewScoresButton.setOnClickListener(new View.OnClickListener() {
@@ -269,6 +274,12 @@ public class Game extends Activity {
         // initial UI initialization
         updateUI();
 	}
+	
+	@Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	mDb.close();
+    }
 	
     @Override
     protected void onSaveInstanceState(Bundle outState) {

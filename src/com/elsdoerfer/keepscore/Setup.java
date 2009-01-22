@@ -238,6 +238,12 @@ public class Setup extends Activity {
     }
     
     @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	mDb.close();
+    }
+    
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(LIST_OF_PLAYERS_KEY, mListOfPlayersArray);

@@ -152,13 +152,18 @@ public class DbAdapter {
     public String[] fetchSessionPlayerNames(long sessionId) {
     	Cursor cursor = mDb.query(PLAYER_TABLE, new String[]{PLAYER_NAME_KEY}, 
     			PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
-    			null, null, PLAYER_INDEX_KEY + " ASC");    	
-    	String[] result = new String[cursor.getCount()];
-    	cursor.moveToFirst();
-    	do {
-    		result[cursor.getPosition()] = cursor.getString(0);
-    	} while (cursor.moveToNext());
-        return result;
+    			null, null, PLAYER_INDEX_KEY + " ASC");
+    	try {
+	    	String[] result = new String[cursor.getCount()];
+	    	cursor.moveToFirst();
+	    	do {
+	    		result[cursor.getPosition()] = cursor.getString(0);
+	    	} while (cursor.moveToNext());
+	        return result;
+    	}
+    	finally {
+    		cursor.close();    	
+    	}
     }
     
     public boolean updateSessionTimestamp(long sessionId) {
@@ -176,8 +181,14 @@ public class DbAdapter {
     		Cursor cursor = mDb.query(SCORE_TABLE, new String[] {"MAX("+SCORE_ROW_KEY+")"}, 
     				PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
     				null, null, null);
-    		cursor.moveToFirst();
-    		int nextRowNum = cursor.getInt(0) + 1;
+    		int nextRowNum;
+    		try {
+    			cursor.moveToFirst();
+    			nextRowNum = cursor.getInt(0) + 1;
+    		}
+    		finally {
+    			cursor.close();
+    		}
     		for (int i=0; i<scores.length; i++) {
 	    		ContentValues values = new ContentValues();	    		
 	    		values.put(SCORE_SESSION_KEY, sessionId);
