@@ -44,6 +44,7 @@ public class DbAdapter {
 	public static String SCORE_TABLE = "score";
 	public static String SCORE_ID_KEY = "_id";
 	public static String SCORE_SESSION_KEY = "session_id";
+	public static String SCORE_ROW_KEY = "row";
 	public static String SCORE_PLAYER_INDEX_KEY = "player_index";
 	public static String SCORE_VALUE_KEY = "value";
 	public static String SCORE_CREATED_AT_KEY = "created_at";
@@ -58,7 +59,8 @@ public class DbAdapter {
         "                     idx INTEGER NOT NULL);",
         
         "CREATE TABLE score (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        "                    session_id INTEGER NOT NULL," + 
+        "                    session_id INTEGER NOT NULL," +
+        "                    row INTEGER NOT NULL," + 
         "                    player_index INTEGER NOT NULL," +
         "                    value INTEGER NOT NULL," +
         "                    created_at UNSIGNED INTEGER NOT NULL);"};
@@ -171,9 +173,15 @@ public class DbAdapter {
     	// values in the session go from 0 to [length].
     	mDb.beginTransaction();
     	try {
+    		Cursor cursor = mDb.query(SCORE_TABLE, new String[] {"MAX("+SCORE_ROW_KEY+")"}, 
+    				PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
+    				null, null, null);
+    		cursor.moveToFirst();
+    		int nextRowNum = cursor.getInt(0) + 1;
     		for (int i=0; i<scores.length; i++) {
 	    		ContentValues values = new ContentValues();	    		
 	    		values.put(SCORE_SESSION_KEY, sessionId);
+	    		values.put(SCORE_ROW_KEY, nextRowNum);
 	    		values.put(SCORE_PLAYER_INDEX_KEY, i);	    			    		
 	    		values.put(SCORE_VALUE_KEY, scores[i]);
 	    		values.put(SCORE_CREATED_AT_KEY, new Date().getTime());
@@ -189,7 +197,7 @@ public class DbAdapter {
     public Cursor fetchSessionScores(long sessionId) {
     	return mDb.query(SCORE_TABLE, new String[]{SCORE_VALUE_KEY}, 
     			SCORE_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
-    			null, null, SCORE_CREATED_AT_KEY + " ASC, " + SCORE_PLAYER_INDEX_KEY + " ASC");    		
+    			null, null, SCORE_ROW_KEY + " ASC, " + SCORE_PLAYER_INDEX_KEY + " ASC");    		
     }
     
     public void deleteSession(long sessionId) {
