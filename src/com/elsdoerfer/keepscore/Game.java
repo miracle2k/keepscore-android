@@ -363,7 +363,7 @@ public class Game extends Activity {
 		// will adjust the value of the last field that we provided a value for.
 		int roundingError = sumAutomaticValues + sumManualScores;
 		if (roundingError != 0) {
-			mNewScoreValues[lastSetIndex] += roundingError;
+			mNewScoreValues[lastSetIndex] -= roundingError;
 			mNewScoreEdits[lastSetIndex].setHint(String.valueOf(mNewScoreValues[lastSetIndex]));
 		}
 
