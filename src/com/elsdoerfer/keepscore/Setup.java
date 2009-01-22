@@ -204,7 +204,7 @@ public class Setup extends Activity {
 				existingSessionListCursor.requery();				
 				continueSession(newId);
 				
-				// TODO: The user wills till see how the interface resets, 
+				// TODO: The user will still see how the interface resets, 
 				// while the new activity is being loaded - not particularly 
 				// nice. Do something about it.
 				mNewPlayerNameText.setText("");
