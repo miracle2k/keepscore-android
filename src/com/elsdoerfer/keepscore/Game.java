@@ -126,6 +126,16 @@ public class Game extends Activity {
         for (int i=0; i<mPlayers.length; i++) {
         	EditText edit = new EditText(this);
         	edit.setGravity(Gravity.CENTER);
+        	// This is a really, really bad hack. We want hours dynamically 
+        	// created edits to store state, but this only happens automatically
+        	// if they have an id. It seems like we can't dynamically generate
+        	// "real" id resources (or can we?), so we just make some up. For
+        	// now it seems to work without side effects. I'd love to see a better
+        	// solution, but doing the storage all manually seems like a lot of
+        	// work and hard to get right (there's a lot to store, selection, 
+        	// focus etc).
+        	// We use 0x7f99..., generated IDs seem to start with 0x7f08... 
+        	edit.setId(0x7f99006 + i);
         	// We'd want single-line, most importantly since <enter> would then
         	// jump to the submit button automatically, but alas, there seems to
         	// be a bug in Android 1.0 which causes the hint-text not to show 
@@ -264,7 +274,6 @@ public class Game extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(DbAdapter.SESSION_ID_KEY, mSessionId);
-        // TODO: save edit field state
     }    
 		
 		
