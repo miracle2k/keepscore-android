@@ -298,7 +298,8 @@ public class Game extends Activity {
 	}
 	
 	protected void updateUI() {
-		// Calculate automatic values for the scores the user did not input himself.
+		// Calculate automatic values for the player 
+		// the user did not give a score himself.
 		int numManualScores = 0;  
 		int sumManualScores = 0;  
 		for (int i=0; i<mNewScoreEdits.length; i++) {
@@ -329,31 +330,42 @@ public class Game extends Activity {
         	}
 		}
 		// Provide default values for the fields currently empty.
-		int mNumAutomaticValues = mNewScoreValues.length-numManualScores;
+		int numAutomaticValues = mNewScoreValues.length-numManualScores;
+		int sumAutomaticValues = 0;
+		Integer lastSetIndex = null;
 		for (int i=0; i<mNewScoreEdits.length; i++) {
 			EditText scoreEdit = mNewScoreEdits[i];			
 			if (!scoreEdit.isEnabled())
 				scoreEdit.setEnabled(true);
 			
-			// Nothing to suggest if not a single value provided by user;
-			// simple clear all automatic values.
+			// Nothing to suggest if not a single value was provided 
+			// by the user; simply clear all automatic values.
 			if (numManualScores<=0) {
 				scoreEdit.setHint(null);
 				mNewScoreValues[i] = null;
 			}			
 			else {
-				// If this is an empty field, provide it with an automatic value 
-				if (scoreEdit.getText().length() == 0) {
-					int suggestedValue = -(sumManualScores / mNumAutomaticValues);
+				// if this is an empty field, provide it with an automatic value 
+				if (scoreEdit.getText().length() == 0) {					
+					int suggestedValue = -(sumManualScores / numAutomaticValues);					
 					scoreEdit.setHint(String.valueOf(suggestedValue));								
 					mNewScoreValues[i] = suggestedValue;
+					sumAutomaticValues += suggestedValue;
+					lastSetIndex = i;
 					// If there is only one automatic field left, disable it.
 					// This prevents the user from entering unbalanced values.
-					if (mNumAutomaticValues==1)
+					if (numAutomaticValues==1)
 						scoreEdit.setEnabled(false);
 				}
 			}
-		}	
+		}
+		// We want rows to be balanced, so to account for rounding errors, we
+		// will adjust the value of the last field that we provided a value for.
+		int roundingError = sumAutomaticValues + sumManualScores;
+		if (roundingError != 0) {
+			mNewScoreValues[lastSetIndex] += roundingError;
+			mNewScoreEdits[lastSetIndex].setHint(String.valueOf(mNewScoreValues[lastSetIndex]));
+		}
 
 		// enable submit button if the user provided at least one score
 		mAddNewScoresButton.setEnabled(numManualScores>0);					
