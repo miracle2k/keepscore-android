@@ -41,6 +41,11 @@ import android.widget.TextView;
 
 public class Game extends Activity {	
 	
+	// number of rows that are required in the table before
+	// we automatically repeat the player names at the table
+	// bottom, because the top might no longer be on screen.
+	private static int NUM_ROWS_FOR_FOOTER = 10;
+	
 	// resources
 	protected Typeface mBoldFace;
 	protected int mCellPadding;
@@ -310,10 +315,23 @@ public class Game extends Activity {
 					currentSums[j] = aRow[j];
 				else 
 					currentSums[j] += aRow[j];
-		}		
+		}	
+		
+		// The position where we insert new score rows changes 
+		// depending on whether we have a footer or not.		
 		mGameTable.addView(makeTextRow(currentSums, false), 
-				           mGameTable.getChildCount()-2);
-		// TODO: add player name header once there are X rows
+				           mGameTable.getChildCount()-
+				           		(mScoreMatrix.size() > NUM_ROWS_FOR_FOOTER ? 3 : 2));
+		
+		// After a certain number of rounds, repeat the player 
+		// names at the bottom. We could also insert something
+		// after every X rows (though we then should do it 
+		// *before* we insert the score row, so that the bottom
+		// most row is always scores).
+		if (mScoreMatrix.size() == NUM_ROWS_FOR_FOOTER) {
+			mGameTable.addView(makeTextRow(mPlayers, true), 
+					           mGameTable.getChildCount()-2);
+		}
 	}
 	
 	protected void updateUI() {
