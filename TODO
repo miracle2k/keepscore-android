@@ -4,3 +4,5 @@
   to conserve space. However, due to a bug in Android that is
   not quite as simple as it should be. See the comment in 
   "res/layout-land/session_list_item.xml" for more information.
+- "Clear current input" option on game screen to clear out all
+  score edits and quickly begin new.
