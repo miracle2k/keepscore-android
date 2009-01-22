@@ -6,3 +6,8 @@
   "res/layout-land/session_list_item.xml" for more information.
 - "Clear current input" option on game screen to clear out all
   score edits and quickly begin new.
+- Remember the X previously used or most commonly used scores 
+  and offer them through a context menu.
+- Add an about menu with version information.
+- Do not jump to submit button if it is disabled (e.g. all 
+  fields empty).
