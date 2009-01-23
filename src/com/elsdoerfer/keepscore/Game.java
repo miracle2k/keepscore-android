@@ -313,7 +313,7 @@ public class Game extends Activity {
         	TextView text = new TextView(this);
         	text.setText(value.toString());
         	text.setGravity(Gravity.CENTER);
-        	if ( header) text.setTypeface(mBoldFace);
+        	if (header) text.setTypeface(mBoldFace);
         	text.setPadding(mCellPadding, mCellPadding, mCellPadding, mCellPadding);
         	newRow.addView(text);        	
         }

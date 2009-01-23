@@ -4,4 +4,6 @@
 	android:layout_height="wrap_content"
 	android:padding="10dip"
 	android:textAppearance="?android:attr/textAppearanceLarge"
+	android:singleLine="true"
+	android:ellipsize="end"    
 	/>

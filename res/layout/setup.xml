@@ -7,7 +7,6 @@
     <TextView  
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-	    android:singleLine="true" 
 	    android:text="@string/new_game"
 	    style="@style/Header"	    
 	    />        
@@ -25,10 +24,10 @@
 		/>  
 		      
 	<ListView
-	 	android:id="@+id/existing_players"	 	
-	  	android:layout_width="fill_parent" 	  		  
-	    android:layout_height="0dip"
-	    android:layout_weight="0"	    
+		android:id="@+id/existing_players"	 	
+		android:layout_width="fill_parent" 	  		  
+		android:layout_height="0dip"
+		android:layout_weight="0"
 	    />
 	<LinearLayout
 		android:orientation="horizontal"
@@ -47,7 +46,7 @@
 			android:id="@+id/add_new_player"
 			android:layout_gravity="right"		
 			android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
+			android:layout_height="fill_parent"
 			android:text="@string/submit_short"
 			/>
 	</LinearLayout>	
