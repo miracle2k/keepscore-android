@@ -30,7 +30,7 @@
 		android:shrinkColumns="*"
 		android:stretchColumns="*">
 		
-		<!-- dynamic rows inserted here -->									
+		<!-- dynamic rows inserted here -->
 		
 		<TableRow
 			android:layout_width="fill_parent"
@@ -43,7 +43,7 @@
 				android:layout_marginLeft="10dp"
 				android:layout_marginRight="10dp"
 				android:gravity="center"
-				android:text="Add new scores" />			
+				android:text="Add new scores" />
 		</TableRow>				
 	</TableLayout>
 </ScrollView>
