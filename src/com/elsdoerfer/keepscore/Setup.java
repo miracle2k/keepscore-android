@@ -108,12 +108,12 @@ public class Setup extends Activity {
     		new SimpleCursorAdapter(
     				this, R.layout.session_list_item, 
     				existingSessionListCursor, 
-    				new String[] { "label", "last_played_at" },  
+    				new String[] { DbAdapter.SESSION_LABEL_VKEY, DbAdapter.SESSION_LAST_PLAYED_AT_KEY },  
     				new int[] { android.R.id.text1, android.R.id.text2 });
     	mExistingSessionsAdapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex)  {
-				int lastPlayedIndex = cursor.getColumnIndex("last_played_at"); 
+				int lastPlayedIndex = cursor.getColumnIndex(DbAdapter.SESSION_LAST_PLAYED_AT_KEY); 
 				if (columnIndex == lastPlayedIndex) {					
 					long now = new Date().getTime() / 1000;
 					long lastPlayed = cursor.getLong(lastPlayedIndex) / 1000;				

@@ -33,7 +33,8 @@ public class DbAdapter {
 	
 	public static String SESSION_TABLE = "session";
 	public static String SESSION_ID_KEY = "_id";
-	public static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";	
+	public static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";
+	public static String SESSION_LABEL_VKEY = "label";	
 	
 	public static String PLAYER_TABLE = "player";
 	public static String PLAYER_ID_KEY = "_id";
@@ -140,6 +141,7 @@ public class DbAdapter {
     }
     
     public Cursor fetchAllSessions() {
+    	// TODO: this should probably use the table and column name constants.
     	return mDb.rawQuery(    			
 			 "SELECT _id, GROUP_CONCAT(name, ', ') AS label, last_played_at "+
 			 "FROM (SELECT session._id AS _id, last_played_at, player.name AS name FROM session "+
@@ -219,9 +221,9 @@ public class DbAdapter {
     public void deleteSession(long sessionId) {
     	mDb.beginTransaction();
     	try {
-	    	mDb.delete("session", "_id = " + sessionId, null);
-	    	mDb.delete("player", "session_id = " + sessionId, null);
-	    	mDb.delete("score", "session_id = " + sessionId, null);
+	    	assert mDb.delete(SESSION_TABLE, SESSION_ID_KEY + " = " + sessionId, null) > 0;
+	    	mDb.delete(PLAYER_TABLE, PLAYER_SESSION_KEY + " = " + sessionId, null);
+	    	mDb.delete(SCORE_TABLE, SCORE_SESSION_KEY + " = " + sessionId, null);
 	    	mDb.setTransactionSuccessful();
     	}
     	finally {
@@ -232,9 +234,9 @@ public class DbAdapter {
     public void clearSessions() {
     	mDb.beginTransaction();
     	try {
-	    	mDb.delete("score", null, null);
-	    	mDb.delete("player", null, null);
-	    	mDb.delete("session", null, null);
+	    	mDb.delete(SCORE_TABLE, null, null);
+	    	mDb.delete(PLAYER_TABLE, null, null);
+	    	mDb.delete(SESSION_TABLE, null, null);
 	    	mDb.setTransactionSuccessful();
     	}
     	finally {
