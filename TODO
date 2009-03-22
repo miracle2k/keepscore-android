@@ -10,12 +10,6 @@
   not quite as simple as it should be. See the comment in 
   "res/layout-land/session_list_item.xml" for more information.
   
-- "Clear current input" option on game screen to clear out all
-  score edits and quickly begin new.
-  
-- Remember the X previously used or most commonly used scores 
-  and offer them through a context menu.
-  
 - Add an about menu with version information.
 
 - Do not jump to submit button if it is disabled (e.g. all 
@@ -51,3 +45,20 @@
   default settings, so that players who always play a specific
   game who's requirementsdo not match the system defaults do
   not have to change them on every new game.
+  
+- Improve input options:
+    
+    - Swiping an edit field horizontally  could change the 
+      sign (i.e. *-1)
+      
+    - Double tapping could clear a field.
+    
+    - "Clear current input" option on game screen to clear out all
+      score edits and quickly begin new. This could also be 
+      implemented using a gesture.
+      
+    - Remember the X previously used or most commonly used scores 
+      and offer them through a context menu. Possible even better
+      would be a dropdown.
+      
+- An help screen is needed to explain the above options.
