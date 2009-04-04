@@ -253,8 +253,11 @@ public class Setup extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		mClearPlayersItem = menu.add(0, CLEAR_PLAYERS_ID, 0, R.string.clear_players);
+		mClearPlayersItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		mDeleteGameItem = menu.add(0, DELETE_GAME_ID, 0, R.string.delete_session);
+		mDeleteGameItem.setIcon(android.R.drawable.ic_menu_delete);
 		mClearGamesItem = menu.add(0, CLEAR_GAMES_ID, 0, R.string.clear_sessions);
+		mClearGamesItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		// setup initial visibilities
 		updateUI();
 		sessionListSelectionChanged();

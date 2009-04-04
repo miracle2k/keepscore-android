@@ -14,8 +14,6 @@
 
 - Do not jump to submit button if it is disabled (e.g. all 
   fields empty).
-  
-- Add some nice menu icons (Nicolas Gramlich on SlideME).
 
 - Custom labels for the sessions (Nicolas Gramlich on SlideME).
 
