@@ -156,14 +156,22 @@ public class Game extends Activity {
 				public boolean onKeyUp(View view, Editable text, int keyCode,
 						KeyEvent event) {
 					// If the user presses enter, jump to the submit button
-					// below. This is basically copied from
-					// android.widget.TextView.java. It would be normal
-					// behavior if single-line where true, but we cannot
-					// use that due to a bug in Android (hints would not show).
+					// below. It would be normal behavior if single-line
+					// where true, but we cannot use that due to a bug in
+					// Android (hints would not show).
 					switch (keyCode) {
 					case KeyEvent.KEYCODE_ENTER:
-						View v = view.focusSearch(View.FOCUS_DOWN);
-						if (v!=null) v.requestFocus(View.FOCUS_DOWN);
+						if (mAddNewScoresButton.isEnabled()) {
+							mAddNewScoresButton.requestFocus();
+							return true;
+						}
+						// ..else fall down into KEYCODE_TAB behavior.
+					case KeyEvent.KEYCODE_TAB:
+						View v = view.focusSearch(View.FOCUS_RIGHT);
+						if (v==null)
+							v = view.focusSearch(View.FOCUS_DOWN);
+						if (v!=null)
+							v.requestFocus(View.FOCUS_FORWARD);
 						return true;
 					}
 

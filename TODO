@@ -8,9 +8,6 @@
   
 - Add an about menu with version information.
 
-- Do not jump to submit button if it is disabled (e.g. all 
-  fields empty).
-
 - Custom labels for the sessions (Nicolas Gramlich on SlideME).
 
 - Toggle table view to show the direct scores for each round 
