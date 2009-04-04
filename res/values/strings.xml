@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">Keep Score</string>
 	<string name="app_description">Keep track of player scores during a card game.</string>
-	
+
 	<string name="new_game">New Game</string>
 	<string name="existing_sessions">Previous Games</string>
 	<string name="continue_session">Continue Game</string>
@@ -12,13 +12,13 @@
 	<string name="enter_new_player">Enter new player</string>
 	<string name="submit_short">&gt;</string>
 	<string name="start_game">Start Game</string>
-	
+
 	<string name="never">Never</string>
 	<string name="just_now">Just Now</string>
-	<string name="bind_days">%s minutes ago</string>
+	<string name="bind_days">%s days ago</string>
 	<string name="bind_hours">%s hours ago</string>
 	<string name="bind_minutes">%s minutes ago</string>
-		
+
 	<string name="not_a_valid_number">Invalid</string>
 	<string name="remove_last_row">Remove Last</string>
 	<string name="end_game">End Game</string>

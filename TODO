@@ -1,7 +1,3 @@
-- The "last played" timespan is wrong most of the time, 
-  apparently not using any labels other than seconds and 
-  minutes.
-
 - Floats: Currently, only integer values are supported.
 
 - The session list in landscape mode should put the timestamp
