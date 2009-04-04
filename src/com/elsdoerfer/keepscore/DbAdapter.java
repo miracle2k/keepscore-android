@@ -1,6 +1,6 @@
 /*
-        Keep Score: keep track of player scores during a card game. 
-        Copyright (C) 2009 Michael Elsdörfer <http://elsdoerfer.name>
+        Keep Score: keep track of player scores during a card game.
+        Copyright (C) 2009 Michael ElsdÃ¶rfer <http://elsdoerfer.name>
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -27,14 +27,14 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DbAdapter {	
+public class DbAdapter {
 
 	///////////////////////////////////////////////////////////////
 
 	public static String SESSION_TABLE = "session";
 	public static String SESSION_ID_KEY = "_id";
 	public static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";
-	public static String SESSION_LABEL_VKEY = "label";	
+	public static String SESSION_LABEL_VKEY = "label";
 
 	public static String PLAYER_TABLE = "player";
 	public static String PLAYER_ID_KEY = "_id";
@@ -51,17 +51,17 @@ public class DbAdapter {
 	public static String SCORE_CREATED_AT_KEY = "created_at";
 
 	private static final String[] DATABASE_CREATE = {
-		"CREATE TABLE session (_id INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+		"CREATE TABLE session (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
 		"                      last_played_at UNSIGNED INTEGER NOT NULL);",
 
 		"CREATE TABLE player (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-		"                     session_id INTEGER NOT NULL," + 
-		"                     name TEXT NOT NULL," + 
+		"                     session_id INTEGER NOT NULL," +
+		"                     name TEXT NOT NULL," +
 		"                     idx INTEGER NOT NULL);",
 
 		"CREATE TABLE score (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
 		"                    session_id INTEGER NOT NULL," +
-		"                    row INTEGER NOT NULL," + 
+		"                    row INTEGER NOT NULL," +
 		"                    player_index INTEGER NOT NULL," +
 		"                    value INTEGER NOT NULL," +
 	"                    created_at UNSIGNED INTEGER NOT NULL);"};
@@ -69,7 +69,7 @@ public class DbAdapter {
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static final String DATABASE_NAME = "data";
-		private static final int DATABASE_VERSION = 1;		
+		private static final int DATABASE_VERSION = 1;
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -82,7 +82,7 @@ public class DbAdapter {
 				for (String statement : DATABASE_CREATE)
 					db.execSQL(statement);
 				db.setTransactionSuccessful();
-			} 
+			}
 			finally {
 				db.endTransaction();
 			}
@@ -90,7 +90,7 @@ public class DbAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
-	}	
+	}
 
 
 	///////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ public class DbAdapter {
 
 	public DbAdapter(Context ctx) {
 		mContext = ctx;
-	}	
+	}
 
 	public DbAdapter open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -137,23 +137,23 @@ public class DbAdapter {
 		}
 		finally {
 			mDb.endTransaction();
-		}    	
+		}
 	}
 
 	public Cursor fetchAllSessions() {
 		// TODO: this should probably use the table and column name constants.
-		return mDb.rawQuery(    			
+		return mDb.rawQuery(
 				"SELECT _id, GROUP_CONCAT(name, ', ') AS label, last_played_at "+
 				"FROM (SELECT session._id AS _id, last_played_at, player.name AS name FROM session "+
 				"      LEFT OUTER JOIN player ON session._id = player.session_id "+
 				"      ORDER BY player.idx ASC) " +
 				"GROUP BY _id "+
-				"ORDER BY last_played_at DESC", null);      
+				"ORDER BY last_played_at DESC", null);
 	}
 
 	public String[] fetchSessionPlayerNames(long sessionId) {
-		Cursor cursor = mDb.query(PLAYER_TABLE, new String[]{PLAYER_NAME_KEY}, 
-				PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
+		Cursor cursor = mDb.query(PLAYER_TABLE, new String[]{PLAYER_NAME_KEY},
+				PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)},
 				null, null, PLAYER_INDEX_KEY + " ASC");
 		try {
 			String[] result = new String[cursor.getCount()];
@@ -164,24 +164,24 @@ public class DbAdapter {
 			return result;
 		}
 		finally {
-			cursor.close();    	
+			cursor.close();
 		}
 	}
 
 	public boolean updateSessionTimestamp(long sessionId) {
 		ContentValues args = new ContentValues();
 		args.put(SESSION_LAST_PLAYED_AT_KEY, new Date().getTime());
-		return mDb.update(SESSION_TABLE, args, SESSION_ID_KEY + "=" + sessionId, null) > 0;	
+		return mDb.update(SESSION_TABLE, args, SESSION_ID_KEY + "=" + sessionId, null) > 0;
 	}
 
 	public void addSessionScores(long sessionId, Integer[] scores) {
-		// We trust that "scores" has the right size for this 
-		// session, and that the corresponding player "index" 
+		// We trust that "scores" has the right size for this
+		// session, and that the corresponding player "index"
 		// values in the session go from 0 to [length].
 		mDb.beginTransaction();
 		try {
-			Cursor cursor = mDb.query(SCORE_TABLE, new String[] {"MAX("+SCORE_ROW_KEY+")"}, 
-					PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
+			Cursor cursor = mDb.query(SCORE_TABLE, new String[] {"MAX("+SCORE_ROW_KEY+")"},
+					PLAYER_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)},
 					null, null, null);
 			int nextRowNum;
 			try {
@@ -198,8 +198,8 @@ public class DbAdapter {
 				values.put(SCORE_PLAYER_INDEX_KEY, i);
 				values.put(SCORE_VALUE_KEY, scores[i]);
 				values.put(SCORE_CREATED_AT_KEY, new Date().getTime());
-				mDb.insert(SCORE_TABLE, null, values);    			
-			}    		
+				mDb.insert(SCORE_TABLE, null, values);
+			}
 			mDb.setTransactionSuccessful();
 		}
 		finally {
@@ -208,14 +208,14 @@ public class DbAdapter {
 	}
 
 	public boolean removeSessionScores(long sessionId, Integer rowNum) {
-		return mDb.delete(SCORE_TABLE, SCORE_SESSION_KEY + "= ? AND " + SCORE_ROW_KEY + " = ?", 
-				new String[]{String.valueOf(sessionId), String.valueOf(rowNum)})>0;   
-	}    
+		return mDb.delete(SCORE_TABLE, SCORE_SESSION_KEY + "= ? AND " + SCORE_ROW_KEY + " = ?",
+				new String[]{String.valueOf(sessionId), String.valueOf(rowNum)})>0;
+	}
 
 	public Cursor fetchSessionScores(long sessionId) {
-		return mDb.query(SCORE_TABLE, new String[]{SCORE_VALUE_KEY}, 
-				SCORE_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)}, 
-				null, null, SCORE_ROW_KEY + " ASC, " + SCORE_PLAYER_INDEX_KEY + " ASC");    		
+		return mDb.query(SCORE_TABLE, new String[]{SCORE_VALUE_KEY},
+				SCORE_SESSION_KEY + "= ?", new String[]{String.valueOf(sessionId)},
+				null, null, SCORE_ROW_KEY + " ASC, " + SCORE_PLAYER_INDEX_KEY + " ASC");
 	}
 
 	public void deleteSession(long sessionId) {
@@ -240,7 +240,7 @@ public class DbAdapter {
 			mDb.setTransactionSuccessful();
 		}
 		finally {
-			mDb.endTransaction();    		
+			mDb.endTransaction();
 		}
 	}
 }

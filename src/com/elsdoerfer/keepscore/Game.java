@@ -1,6 +1,6 @@
 /*
-        Keep Score: keep track of player scores during a card game. 
-        Copyright (C) 2009 Michael Elsdörfer <http://elsdoerfer.name>
+        Keep Score: keep track of player scores during a card game.
+        Copyright (C) 2009 Michael ElsdÃ¶rfer <http://elsdoerfer.name>
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class Game extends Activity {	
+public class Game extends Activity {
 
 	// number of rows that are required in the table before
 	// we automatically repeat the player names at the table
@@ -52,9 +52,9 @@ public class Game extends Activity {
 
 	// menu items
 	public static final int REMOVE_LAST_ROW_ID = Menu.FIRST;
-	public static final int END_GAME_ID = Menu.FIRST + 1;	
+	public static final int END_GAME_ID = Menu.FIRST + 1;
 	protected MenuItem mRemoveLastRowItem;
-	protected MenuItem mEndGameItem;		
+	protected MenuItem mEndGameItem;
 
 	// static views
 	protected ScrollView mGameScrollView;
@@ -69,16 +69,16 @@ public class Game extends Activity {
 	DbAdapter mDb = new DbAdapter(this);
 
 	// the session we are currently playing
-	protected Long mSessionId;	
+	protected Long mSessionId;
 	// the session's data, stored temporary in local memory
 	protected String[] mPlayers;
 	protected ArrayList<Integer[]> mScoreMatrix;
 
-	// Holds the user-entered or automatically calculated 
+	// Holds the user-entered or automatically calculated
 	// values for the next new row scores.
 	protected Integer[] mNewScoreValues;
 
-	// The value the user previously entered into a score field. 
+	// The value the user previously entered into a score field.
 	// Used  to prefill the fields he might enter next with a default.
 	protected CharSequence mLastEnteredValue = null;
 
@@ -89,19 +89,19 @@ public class Game extends Activity {
 
 		// setup database connection
 		mDb = new DbAdapter(this);
-		mDb.open();        
+		mDb.open();
 
 		// initialize data from state bundle or passed row
-		mSessionId = savedInstanceState != null 
+		mSessionId = savedInstanceState != null
 		? savedInstanceState.getLong(DbAdapter.SESSION_ID_KEY)
-				: null;        
+				: null;
 		if (mSessionId == null) {
 			Bundle extras = getIntent().getExtras();
 			mSessionId = extras.getLong(DbAdapter.SESSION_ID_KEY);
 		}
 
 		// load list of players for this game
-		mPlayers = mDb.fetchSessionPlayerNames(mSessionId);        
+		mPlayers = mDb.fetchSessionPlayerNames(mSessionId);
 
 		// get views
 		mGameScrollView = (ScrollView)findViewById(R.id.game_container);
@@ -109,7 +109,7 @@ public class Game extends Activity {
 		mAddNewScoresButton = (Button)findViewById(R.id.add_new_scores);
 		TableRow.LayoutParams params = (TableRow.LayoutParams)mAddNewScoresButton.getLayoutParams();
 		params.span = mPlayers.length;
-		mAddNewScoresButton.setLayoutParams(params);       
+		mAddNewScoresButton.setLayoutParams(params);
 
 		// load resources
 		mBoldFace = Typeface.defaultFromStyle(Typeface.BOLD);
@@ -120,30 +120,30 @@ public class Game extends Activity {
 		mGameTable.addView(mHeaderRow, 0);
 
 		// create the edit row, allows adding new scores
-		TableRow editRow = new TableRow(this);        
+		TableRow editRow = new TableRow(this);
 		mNewScoreEdits = (EditText[]) Array.newInstance(EditText.class, mPlayers.length);
 		mNewScoreValues = (Integer[]) Array.newInstance(Integer.class, mPlayers.length);
 		for (int i=0; i<mPlayers.length; i++) {
 			EditText edit = new EditText(this);
 			edit.setGravity(Gravity.CENTER);
-			// This is a really, really bad hack. We want hours dynamically 
+			// This is a really, really bad hack. We want hours dynamically
 			// created edits to store state, but this only happens automatically
 			// if they have an id. It seems like we can't dynamically generate
 			// "real" id resources (or can we?), so we just make some up. For
 			// now it seems to work without side effects. I'd love to see a better
 			// solution, but doing the storage all manually seems like a lot of
-			// work and hard to get right (there's a lot to store, selection, 
+			// work and hard to get right (there's a lot to store, selection,
 			// focus etc).
-			// We use 0x7f99..., generated IDs seem to start with 0x7f08... 
+			// We use 0x7f99..., generated IDs seem to start with 0x7f08...
 			edit.setId(0x7f99006 + i);
 			// We'd want single-line, most importantly since <enter> would then
 			// jump to the submit button automatically, but alas, there seems to
-			// be a bug in Android 1.0 which causes the hint-text not to show 
+			// be a bug in Android 1.0 which causes the hint-text not to show
 			// if single line is enabled. So for now, don't.
-			// edit.setSingleLine(true);         
+			// edit.setSingleLine(true);
 
-			// Use a DigitsKeyListener to only allow digits, plus add some 
-			// custom key handling. 
+			// Use a DigitsKeyListener to only allow digits, plus add some
+			// custom key handling.
 			edit.setKeyListener(new DigitsKeyListener(true, false) {
 
 				@Override
@@ -155,10 +155,10 @@ public class Game extends Activity {
 				@Override
 				public boolean onKeyUp(View view, Editable text, int keyCode,
 						KeyEvent event) {
-					// If the user presses enter, jump to the submit button 
-					// below. This is basically copied from 
-					// android.widget.TextView.java. It would be normal 
-					// behavior if single-line where true, but we cannot 
+					// If the user presses enter, jump to the submit button
+					// below. This is basically copied from
+					// android.widget.TextView.java. It would be normal
+					// behavior if single-line where true, but we cannot
 					// use that due to a bug in Android (hints would not show).
 					switch (keyCode) {
 					case KeyEvent.KEYCODE_ENTER:
@@ -177,9 +177,9 @@ public class Game extends Activity {
 			edit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View v, boolean hasFocus) {
-					// When the user enters an edit field, we prefill 
+					// When the user enters an edit field, we prefill
 					// it with the value of the previous field the user
-					// entered text in. This allows for example the 
+					// entered text in. This allows for example the
 					// following workflow: Players A, B, C, D. A and B
 					// get awarded 50 points, C and D lose 50 points.
 					// User focuses edit A, types 50, focuses field B,
@@ -193,8 +193,8 @@ public class Game extends Activity {
 							if (edit.getText().length() == 0) {
 								edit.setText(mLastEnteredValue);
 								// TODO: selectAll doesn't have an effect
-								// when entering the field via touch, 
-								// probably because it gets overridden 
+								// when entering the field via touch,
+								// probably because it gets overridden
 								// right afterwards.
 								edit.selectAll();
 							}
@@ -202,14 +202,14 @@ public class Game extends Activity {
 					}
 					// Some error messages need to update when the
 					// focus changes, see updateUI comments for more info.
-					updateUI();					
-				}        		
+					updateUI();
+				}
 			});
 			editRow.addView(edit);
 			mNewScoreEdits[i] = edit;
 			mNewScoreValues[i] = null;
 		}
-		mGameTable.addView(editRow, 1); 
+		mGameTable.addView(editRow, 1);
 
 		mScoreMatrix = new ArrayList<Integer[]>();
 
@@ -229,12 +229,12 @@ public class Game extends Activity {
 					}
 				} while (scoreStream.moveToNext());
 				if (currentPos != 0) {
-					// Something is wrong with the database, 
-					// there was an invalid number of tokens 
+					// Something is wrong with the database,
+					// there was an invalid number of tokens
 					// in the stream. This shouldn't happen.
 					throw new java.lang.IndexOutOfBoundsException(
 							"Score stream ended unexpectedly. The " +
-					"session data is faulty.");       	
+					"session data is faulty.");
 				}
 			}
 		}
@@ -242,7 +242,7 @@ public class Game extends Activity {
 			scoreStream.close();
 		}
 
-		// setup event handlers     
+		// setup event handlers
 		mAddNewScoresButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -251,7 +251,7 @@ public class Game extends Activity {
 				// The submit button should not be enabled if this is not
 				// the case.
 				mDb.addSessionScores(mSessionId, mNewScoreValues);
-				insertScoreRow(mNewScoreValues);		        
+				insertScoreRow(mNewScoreValues);
 
 				// clear existing input values.
 				for (int i=0; i<mNewScoreValues.length; i++)	{
@@ -260,16 +260,16 @@ public class Game extends Activity {
 					mLastEnteredValue = null;
 				}
 
-				// update UI - for some reason, this is one of the few 
+				// update UI - for some reason, this is one of the few
 				// ways we actually managed to scroll to the very bottom.
 				// In particular, using "fullScroll(FOCUS_DOWN)" never
 				// scrolled the submit button fully into view, and neither
-				// did the non-smooth scrolling methods. 
+				// did the non-smooth scrolling methods.
 				mGameScrollView.smoothScrollBy(0, mGameScrollView.getHeight());
 				mNewScoreEdits[0].requestFocus();
 				updateUI();
 			}
-		});       
+		});
 
 		// initial UI initialization
 		updateUI();
@@ -285,17 +285,17 @@ public class Game extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putLong(DbAdapter.SESSION_ID_KEY, mSessionId);
-	}    
+	}
 
 
 	@Override
-	protected void onPause() {   
+	protected void onPause() {
 		super.onPause();
 		mDb.updateSessionTimestamp(mSessionId);
 	}
 
 	@Override
-	protected void onResume() {   
+	protected void onResume() {
 		super.onResume();
 		mDb.updateSessionTimestamp(mSessionId);
 	}
@@ -303,9 +303,9 @@ public class Game extends Activity {
 	/**
 	 * Make a new row of TextView objects that can be added to the
 	 * table.
-	 * 
-	 * Used to create the score rows for each round, as well as 
-	 * header rows. 
+	 *
+	 * Used to create the score rows for each round, as well as
+	 * header rows.
 	 */
 	protected TableRow makeTextRow(Object[] values, boolean header) {
 		TableRow newRow = new TableRow(this);
@@ -315,54 +315,54 @@ public class Game extends Activity {
 			text.setGravity(Gravity.CENTER);
 			if (header) text.setTypeface(mBoldFace);
 			text.setPadding(mCellPadding, mCellPadding, mCellPadding, mCellPadding);
-			newRow.addView(text);        	
+			newRow.addView(text);
 		}
 		return newRow;
 	}
 
 	protected void insertScoreRow(Integer[] scores) {
-		scores = scores.clone();  // copy, to allow caller to reuse his object 
+		scores = scores.clone();  // copy, to allow caller to reuse his object
 		mScoreMatrix.add(scores);
 
-		// "scores" is the latest change, but we need to display 
-		// the  current sum for each player, so create an error 
-		// that contains the updated sum values.						
+		// "scores" is the latest change, but we need to display
+		// the  current sum for each player, so create an error
+		// that contains the updated sum values.
 		Integer[] currentSums = new Integer[scores.length];
 		for (int i=0; i<mScoreMatrix.size(); i++) {
 			Integer[] aRow = mScoreMatrix.get(i);
 			for (int j=0; j<aRow.length; j++)
 				if (currentSums[j] == null)
 					currentSums[j] = aRow[j];
-				else 
+				else
 					currentSums[j] += aRow[j];
-		}	
+		}
 
-		mGameTable.addView(makeTextRow(currentSums, false), 
+		mGameTable.addView(makeTextRow(currentSums, false),
 				getInsertPosition());
 
-		// After a certain number of rounds, repeat the player 
+		// After a certain number of rounds, repeat the player
 		// names at the bottom. We could also insert something
-		// after every X rows (though we then should do it 
+		// after every X rows (though we then should do it
 		// *before* we insert the score row, so that the bottom
 		// most row is always scores).
 		if (mScoreMatrix.size() == NUM_ROWS_FOR_FOOTER) {
-			mGameTable.addView(makeTextRow(mPlayers, true), 
+			mGameTable.addView(makeTextRow(mPlayers, true),
 					mGameTable.getChildCount()-2);
 		}
 	}
 
 	protected int getInsertPosition() {
-		// The position where we insert new score rows changes 
+		// The position where we insert new score rows changes
 		// depending on whether we have a footer or not.
 		return mGameTable.getChildCount()-
 		(mScoreMatrix.size() > NUM_ROWS_FOR_FOOTER ? 3 : 2);
 	}
 
 	protected void updateUI() {
-		// Calculate automatic values for the player 
+		// Calculate automatic values for the player
 		// the user did not give a score himself.
-		int numManualScores = 0;  
-		int sumManualScores = 0;  
+		int numManualScores = 0;
+		int sumManualScores = 0;
 		for (int i=0; i<mNewScoreEdits.length; i++) {
 			EditText scoreEdit = mNewScoreEdits[i];
 			String stringValue = scoreEdit.getText().toString();
@@ -374,19 +374,19 @@ public class Game extends Activity {
 					numManualScores++;
 				} catch (NumberFormatException e) {
 					// Android's error message functionality is nice,
-					// but because it is reset every time the user 
+					// but because it is reset every time the user
 					// changes the text, and this could would immediately
 					// set the error again, you'd see the error popup
 					// constantly hiding/showing as the user types, which
 					// doesn't look good and is slow. So our hacky solution
 					// is to only show set the error if the edit does not
 					// have focus, i.e. once it loses focus.
-					if (!scoreEdit.hasFocus())						
-						scoreEdit.setError(getResources().getString(R.string.not_a_valid_number)); 
+					if (!scoreEdit.hasFocus())
+						scoreEdit.setError(getResources().getString(R.string.not_a_valid_number));
 				}
 				else {
-					// This particular field has no explicit value, indicate 
-					// as much so that it will later be calculated. 
+					// This particular field has no explicit value, indicate
+					// as much so that it will later be calculated.
 					mNewScoreValues[i] = null;
 				}
 		}
@@ -395,21 +395,21 @@ public class Game extends Activity {
 		int sumAutomaticValues = 0;
 		Integer lastSetIndex = null;
 		for (int i=0; i<mNewScoreEdits.length; i++) {
-			EditText scoreEdit = mNewScoreEdits[i];			
+			EditText scoreEdit = mNewScoreEdits[i];
 			if (!scoreEdit.isEnabled())
 				scoreEdit.setEnabled(true);
 
-			// Nothing to suggest if not a single value was provided 
+			// Nothing to suggest if not a single value was provided
 			// by the user; simply clear all automatic values.
 			if (numManualScores<=0) {
 				scoreEdit.setHint(null);
 				mNewScoreValues[i] = null;
-			}			
+			}
 			else {
-				// if this is an empty field, provide it with an automatic value 
-				if (scoreEdit.getText().length() == 0) {					
-					int suggestedValue = -(sumManualScores / numAutomaticValues);					
-					scoreEdit.setHint(String.valueOf(suggestedValue));								
+				// if this is an empty field, provide it with an automatic value
+				if (scoreEdit.getText().length() == 0) {
+					int suggestedValue = -(sumManualScores / numAutomaticValues);
+					scoreEdit.setHint(String.valueOf(suggestedValue));
 					mNewScoreValues[i] = suggestedValue;
 					sumAutomaticValues += suggestedValue;
 					lastSetIndex = i;
@@ -429,7 +429,7 @@ public class Game extends Activity {
 		}
 
 		// enable submit button if the user provided at least one score
-		mAddNewScoresButton.setEnabled(numManualScores>0);	
+		mAddNewScoresButton.setEnabled(numManualScores>0);
 
 		// can only remove a row if there actually is one
 		if (mRemoveLastRowItem!=null)
@@ -450,24 +450,24 @@ public class Game extends Activity {
 		switch (item.getItemId()) {
 		case REMOVE_LAST_ROW_ID:
 			Integer[] lastRow = mScoreMatrix.get(mScoreMatrix.size()-1);
-			// Attention! The order of the following calls is vital, 
+			// Attention! The order of the following calls is vital,
 			// since each affects the indexes that the others are using.
 			if (mScoreMatrix.size() == NUM_ROWS_FOR_FOOTER)
-				// need to make sure that we remove the footer at 
+				// need to make sure that we remove the footer at
 				// the right moment as well
 				mGameTable.removeViewAt(mGameTable.getChildCount()-3);
-			// Note: assumes that the row ids in the database 
-			// match the row indices here. as long as rows are 
-			// not removed in between, this should be true.    		
+			// Note: assumes that the row ids in the database
+			// match the row indices here. as long as rows are
+			// not removed in between, this should be true.
 			mDb.removeSessionScores(mSessionId, getInsertPosition()-1);
-			mGameTable.removeViewAt(getInsertPosition()-1);    		
+			mGameTable.removeViewAt(getInsertPosition()-1);
 			mScoreMatrix.remove(lastRow);
 
 			return true;
 		case END_GAME_ID:
 			finish();
 			return true;
-		}    	
+		}
 		return false;
 	}
 

@@ -1,6 +1,6 @@
 /*
-        Keep Score: keep track of player scores during a card game. 
-        Copyright (C) 2009 Michael Elsdörfer <http://elsdoerfer.name>
+        Keep Score: keep track of player scores during a card game.
+        Copyright (C) 2009 Michael ElsdÃ¶rfer <http://elsdoerfer.name>
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class Setup extends Activity {	
+public class Setup extends Activity {
 
 	// views
 	protected ListView mExistingPlayersList;
 	protected EditText mNewPlayerNameText;
-	protected Button mAddNewPlayerButton;	
+	protected Button mAddNewPlayerButton;
 	protected Button mStartNewGameButton;
 	protected LinearLayout mExistingSessionsPanel;
 	protected ListView mExistingSessionsList;
@@ -61,10 +61,10 @@ public class Setup extends Activity {
 	public static final int CLEAR_PLAYERS_ID = Menu.FIRST;
 	public static final int CONTINUE_GAME_ID = Menu.FIRST + 1;
 	public static final int DELETE_GAME_ID = Menu.FIRST + 2;
-	public static final int CLEAR_GAMES_ID = Menu.FIRST + 3;	
+	public static final int CLEAR_GAMES_ID = Menu.FIRST + 3;
 	protected MenuItem mClearPlayersItem;
 	protected MenuItem mDeleteGameItem;
-	protected MenuItem mClearGamesItem;	
+	protected MenuItem mClearGamesItem;
 
 	DbAdapter mDb = new DbAdapter(this);
 
@@ -78,8 +78,8 @@ public class Setup extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);        
-		setContentView(R.layout.setup);          
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.setup);
 
 		// open database
 		mDb = new DbAdapter(this);
@@ -94,48 +94,48 @@ public class Setup extends Activity {
 		mExistingSessionsList = (ListView)findViewById(R.id.existing_sessions_list);
 
 		// prepare the list of players for a new session
-		mListOfPlayersArray = savedInstanceState != null 
-		? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS_KEY) 
+		mListOfPlayersArray = savedInstanceState != null
+		? savedInstanceState.getStringArrayList(LIST_OF_PLAYERS_KEY)
 				: new ArrayList<String>();
 		mListOfPlayersAdapter = new ArrayAdapter<String>(
 				this, R.layout.player_list_item, mListOfPlayersArray);
-		mExistingPlayersList.setAdapter(mListOfPlayersAdapter);    	
+		mExistingPlayersList.setAdapter(mListOfPlayersAdapter);
 
 		// prepare the list of existing sessions
 		final Cursor existingSessionListCursor = mDb.fetchAllSessions();
 		startManagingCursor(existingSessionListCursor);
-		mExistingSessionsAdapter = 
+		mExistingSessionsAdapter =
 			new SimpleCursorAdapter(
-					this, R.layout.session_list_item, 
-					existingSessionListCursor, 
-					new String[] { DbAdapter.SESSION_LABEL_VKEY, DbAdapter.SESSION_LAST_PLAYED_AT_KEY },  
+					this, R.layout.session_list_item,
+					existingSessionListCursor,
+					new String[] { DbAdapter.SESSION_LABEL_VKEY, DbAdapter.SESSION_LAST_PLAYED_AT_KEY },
 					new int[] { android.R.id.text1, android.R.id.text2 });
 		mExistingSessionsAdapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex)  {
-				int lastPlayedIndex = cursor.getColumnIndex(DbAdapter.SESSION_LAST_PLAYED_AT_KEY); 
-				if (columnIndex == lastPlayedIndex) {					
+				int lastPlayedIndex = cursor.getColumnIndex(DbAdapter.SESSION_LAST_PLAYED_AT_KEY);
+				if (columnIndex == lastPlayedIndex) {
 					long now = new Date().getTime() / 1000;
-					long lastPlayed = cursor.getLong(lastPlayedIndex) / 1000;				
+					long lastPlayed = cursor.getLong(lastPlayedIndex) / 1000;
 
-					// This code was adapted from http://code.google.com/p/connectbot/ 
+					// This code was adapted from http://code.google.com/p/connectbot/
 					String nice = getString(R.string.never);
 					if (lastPlayed > 0) {
-						int minutes = (int)((now - lastPlayed) / 60);		                
+						int minutes = (int)((now - lastPlayed) / 60);
 						if (minutes >= 60) {
-							int hours = (minutes / 60);		                            
+							int hours = (minutes / 60);
 							if (hours >= 24) {
 								int days = (hours / 24);
 								if (days > 30) {
 									nice = new SimpleDateFormat("dd. MMM yyyy, HH:mm").
-									format(new Date(lastPlayed));	
+									format(new Date(lastPlayed));
 								}
 								else
 									nice = getString(R.string.bind_days, days);
 							}
 							else
 								nice = getString(R.string.bind_hours, hours);
-						} 
+						}
 						else if (minutes == 0)
 							nice = getString(R.string.just_now);
 						else
@@ -143,14 +143,14 @@ public class Setup extends Activity {
 					}
 
 					((TextView)view).setText(nice);
-					return true; 
-				}  
+					return true;
+				}
 				return false;
 			}
 		});
-		mExistingSessionsList.setAdapter(mExistingSessionsAdapter);      	
+		mExistingSessionsList.setAdapter(mExistingSessionsAdapter);
 
-		// setup event handlers - we need to refer to the context in some of them 
+		// setup event handlers - we need to refer to the context in some of them
 		final Context context = this;
 
 		this.registerForContextMenu(mExistingSessionsList);
@@ -159,11 +159,11 @@ public class Setup extends Activity {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
-					mAddNewPlayerButton.performClick();				
+					mAddNewPlayerButton.performClick();
 					return true;
-				}				
+				}
 				return false;
-			}        	
+			}
 		});
 
 		mAddNewPlayerButton.setOnClickListener(new View.OnClickListener() {
@@ -175,12 +175,12 @@ public class Setup extends Activity {
 				addPlayerToNewGame(playerName);
 				// clear field for new player
 				mNewPlayerNameText.setText("");
-				mNewPlayerNameText.requestFocus();				
-			}        	
-		});    
+				mNewPlayerNameText.requestFocus();
+			}
+		});
 
 		mExistingPlayersList.setOnItemClickListener(new OnItemClickListener() {
-			@Override			
+			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
 				final String selectedPlayer = mListOfPlayersAdapter.getItem(position);
 				new AlertDialog.Builder(context)
@@ -194,23 +194,23 @@ public class Setup extends Activity {
 				})
 				.setNegativeButton("No", null)
 				.create().show();
-			}			     	
+			}
 		});
 
 		mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				long newId = mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
-				existingSessionListCursor.requery();				
+				existingSessionListCursor.requery();
 				continueSession(newId);
 
-				// TODO: The user will still see how the interface resets, 
-				// while the new activity is being loaded - not particularly 
+				// TODO: The user will still see how the interface resets,
+				// while the new activity is being loaded - not particularly
 				// nice. Do something about it.
 				mNewPlayerNameText.setText("");
 				mListOfPlayersAdapter.clear();
-				updateUI();				
-			}        	
+				updateUI();
+			}
 		});
 
 		mExistingSessionsList.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -222,15 +222,15 @@ public class Setup extends Activity {
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				sessionListSelectionChanged();
-			}        
-		});        
+			}
+		});
 
 		mExistingSessionsList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				continueSession(id);		
-			}        	
+				continueSession(id);
+			}
 		});
 
 		// initial update
@@ -247,7 +247,7 @@ public class Setup extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putStringArrayList(LIST_OF_PLAYERS_KEY, mListOfPlayersArray);
-	}    
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -264,7 +264,7 @@ public class Setup extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case DELETE_GAME_ID:
-			deleteSession(mExistingSessionsList.getSelectedItemId());    		
+			deleteSession(mExistingSessionsList.getSelectedItemId());
 			return true;
 		case CLEAR_GAMES_ID:
 			new AlertDialog.Builder(this)
@@ -278,7 +278,7 @@ public class Setup extends Activity {
 				}
 			})
 			.setNegativeButton("No", null)
-			.create().show();    		
+			.create().show();
 			return true;
 		case CLEAR_PLAYERS_ID:
 			mListOfPlayersAdapter.clear();
@@ -289,69 +289,69 @@ public class Setup extends Activity {
 	}
 
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;        
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 		menu.setHeaderTitle(((TextView)info.targetView.findViewById(android.R.id.text1)).getText());
 		menu.add(R.string.continue_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				continueSession(info.id);				
+				continueSession(info.id);
 				return true;
-			}        		
+			}
 		});
 		menu.add(R.string.delete_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				deleteSession(info.id);
 				return true;
-			}        		
-		});                
-	}    
+			}
+		});
+	}
 
-	protected void addPlayerToNewGame(String playerName) {    	
+	protected void addPlayerToNewGame(String playerName) {
 		mListOfPlayersAdapter.add(playerName);
 		updateUI();
-	}   
+	}
 
 	protected void continueSession(long id) {
 		Intent intent = new Intent(this, Game.class);
 		intent.putExtra(DbAdapter.SESSION_ID_KEY, id);
-		startActivity(intent);			
+		startActivity(intent);
 	}
 
 	protected void deleteSession(long id) {
 		mDb.deleteSession(id);
 		mExistingSessionsAdapter.getCursor().requery();
-		updateUI();    	
+		updateUI();
 	}
 
 	protected void sessionListSelectionChanged() {
-		if (mDeleteGameItem!=null)			
+		if (mDeleteGameItem!=null)
 			mDeleteGameItem.setEnabled(mExistingSessionsList.getSelectedItem() != null);
 	}
 
-	protected void updateUI() {    	
+	protected void updateUI() {
 		// Hide "existing session" list once the user starts to add
 		// players for a new game. This is mostly for layout reasons,
-		// because we apparently can't really have two lists in the 
+		// because we apparently can't really have two lists in the
 		// same screen unless both are fixed height (the first
 		// list would push elements below it out of the screen) (*).
-		// 
-		// So we basically hide the session list when the player 
+		//
+		// So we basically hide the session list when the player
 		// starts to use the player list.
 		//
 		// (*) We could possible work with a parent ScrollView and
-		// making both lists wrap_content, i.e. the whole screen 
-		// would scroll, through both lists and the controls in 
-		// between. This wouldn't make for very good user interface 
+		// making both lists wrap_content, i.e. the whole screen
+		// would scroll, through both lists and the controls in
+		// between. This wouldn't make for very good user interface
 		// though, since the user would be responsible to scrolling
-		// the "player name" TextEdit into view when he wants to use it. 
+		// the "player name" TextEdit into view when he wants to use it.
 		if (!mListOfPlayersAdapter.isEmpty()) {
 			LinearLayout.LayoutParams params;
 			params = (LinearLayout.LayoutParams) mExistingPlayersList.getLayoutParams();
 			params.weight = 1;
-			mExistingPlayersList.setLayoutParams(params);                      
+			mExistingPlayersList.setLayoutParams(params);
 
-			mExistingSessionsPanel.setVisibility(View.GONE);            
+			mExistingSessionsPanel.setVisibility(View.GONE);
 		} else {
 			LinearLayout.LayoutParams params;
 			params = (LinearLayout.LayoutParams) mExistingPlayersList.getLayoutParams();
@@ -363,10 +363,10 @@ public class Setup extends Activity {
 				mExistingSessionsPanel.setVisibility(View.GONE);
 			else
 				mExistingSessionsPanel.setVisibility(View.VISIBLE);
-		}    
+		}
 
-		// Show/hide/enable menu items depending on the features 
-		// and controls  currently visible. 
+		// Show/hide/enable menu items depending on the features
+		// and controls  currently visible.
 		if (mDeleteGameItem != null) {   // Menu might not have been created yet
 			boolean editingPlayers = !mListOfPlayersAdapter.isEmpty();
 			boolean sessionsExist = !mExistingSessionsAdapter.isEmpty();
@@ -380,6 +380,6 @@ public class Setup extends Activity {
 		if (mListOfPlayersAdapter.getCount() >= 2)
 			mStartNewGameButton.setVisibility(View.VISIBLE);
 		else
-			mStartNewGameButton.setVisibility(View.GONE);        
+			mStartNewGameButton.setVisibility(View.GONE);
 	}
 }
