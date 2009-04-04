@@ -221,7 +221,13 @@ public class DbAdapter {
 	public void deleteSession(long sessionId) {
 		mDb.beginTransaction();
 		try {
-			assert mDb.delete(SESSION_TABLE, SESSION_ID_KEY + " = " + sessionId, null) > 0;
+			int rc = mDb.delete(SESSION_TABLE, SESSION_ID_KEY + " = " + sessionId, null);
+			assert rc > 0;
+			// Merging the previous two lines causes the session not be
+			// deleted, without the assert failing? I'd guess asserts are
+			// removed/ignored in production, but it even happened during
+			// debugging (i think)...
+
 			mDb.delete(PLAYER_TABLE, PLAYER_SESSION_KEY + " = " + sessionId, null);
 			mDb.delete(SCORE_TABLE, SCORE_SESSION_KEY + " = " + sessionId, null);
 			mDb.setTransactionSuccessful();
