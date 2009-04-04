@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-	Unfortunately, ScrollView cannot currently scroll horizontally, 
+	Unfortunately, ScrollView cannot currently scroll horizontally,
 	which is sort of a shame, since screen space can get scarce if
 	we have lots of players.
-	
+
 	To migitate the problem, we declare all columns shrinkable, which
-	allows us to fit a good bunch of them in until we run out of screen 
-	space (columns are also stretchable to improve layout look with fewer 
+	allows us to fit a good bunch of them in until we run out of screen
+	space (columns are also stretchable to improve layout look with fewer
 	players).
-	
-	Some resources to implement horizontal scrolling (though we already 
-	tried and failed - we couldn't get TableLayout to expand beyond the 
+
+	Some resources to implement horizontal scrolling (though we already
+	tried and failed - we couldn't get TableLayout to expand beyond the
 	screen width, for some reason, so scrolling code didn't even realize
 	it had work to do).
-	
+
 	 	http://nan-technicalblog.blogspot.com/2008/12/android-how-to-use-horizontal-scrolling.html
 	 	http://groups.google.com/group/android-developers/browse_thread/thread/bf080f10774979b8/28df4ce43e6b2916?show_docid=28df4ce43e6b2916
 	 	http://www.anddev.org/scrolling_a_picture_horizontally_and_vertically-t3245.html
@@ -23,15 +23,15 @@
 	android:id="@+id/game_container"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<TableLayout	
+	<TableLayout
 		android:id="@+id/game"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:shrinkColumns="*"
 		android:stretchColumns="*">
-		
+
 		<!-- dynamic rows inserted here -->
-		
+
 		<TableRow
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
@@ -44,6 +44,6 @@
 				android:layout_marginRight="10dp"
 				android:gravity="center"
 				android:text="Add new scores" />
-		</TableRow>				
+		</TableRow>
 	</TableLayout>
 </ScrollView>

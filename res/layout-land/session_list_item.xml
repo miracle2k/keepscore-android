@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"	
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:padding="10dip">		
-			   
+		android:padding="10dip">
+
 		<TextView
 				android:id="@android:id/text1"
 				android:layout_width="wrap_content"
@@ -16,36 +16,36 @@
 		<TextView
 				android:id="@android:id/text2"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"				
+				android:layout_height="wrap_content"
 				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:layout_below="@android:id/text1"
 				/>
-				<!-- 
-				The reason we have a separate layout for landscape mode is 
+				<!--
+				The reason we have a separate layout for landscape mode is
 				that we'd like to align the timestamp (text2) to the right
-				of the label (text1), allowing us conserve space and to 
+				of the label (text1), allowing us conserve space and to
 				display more rows.
-				
+
 				Unfortunately, even in landscape mode it can happen that the
-				label (text1) is too long, and that there is not enough 
+				label (text1) is too long, and that there is not enough
 				space for both text1 and text2. Due to what is apparently
 				a bug in Android the list item in such a case will then
 				suddenly feature a considerably large height, while actually
 				being mostly empty and only displaying text1.
-				
+
 				To solve this, two approaches come to mind:
-				
+
 					- Use a single TextView with variable formatting, e.g.
-					  so that we can have to timestamp display in a 
+					  so that we can have to timestamp display in a
 					  smaller font.
-				
+
 					- Use a custom ListAdapter that could detect when text1
 					  is too long and change the layout accordingly.
-					  
+
 				For now, this shall be on the TODO list.
-								 
+
 				android:paddingLeft="10dip"
 				android:layout_toRightOf="@android:id/text1"
-				/>-->			 
+				/>-->
 
 </RelativeLayout>
