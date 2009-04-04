@@ -448,9 +448,9 @@ public class Game extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		mRemoveLastRowItem = menu.add(0, REMOVE_LAST_ROW_ID, 0, R.string.remove_last_row);
-		mRemoveLastRowItem.setIcon(android.R.drawable.ic_menu_revert);
+		mRemoveLastRowItem.setIcon(R.drawable.ic_menu_revert);
 		mEndGameItem = menu.add(0, END_GAME_ID, 0, R.string.end_game);
-		mEndGameItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		mEndGameItem.setIcon(R.drawable.ic_menu_close_clear_cancel);
 		// setup initial visibilities
 		updateUI();
 		return true;
