@@ -47,7 +47,7 @@
 			android:layout_gravity="right"
 			android:layout_width="wrap_content"
 			android:layout_height="fill_parent"
-			android:text="@string/submit_short"
+			android:drawableLeft="@drawable/ic_menu_add_small"
 			/>
 	</LinearLayout>
 
