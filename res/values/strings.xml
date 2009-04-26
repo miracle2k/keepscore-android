@@ -13,6 +13,7 @@
 	<string name="clear_sessions">Clear All Games</string>
 	<string name="confirm_rm_all_sessions">This will permanently remove all saved sessions. Are you sure?</string>
 	<string name="clear_players">Clear Players</string>
+	<string name="confirm_rm_player">Remove player \"%1$s\"?</string>
 	<string name="enter_new_player">Enter new player</string>
 	<string name="submit_short">&gt;</string>
 

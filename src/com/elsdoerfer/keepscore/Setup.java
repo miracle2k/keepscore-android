@@ -216,14 +216,14 @@ public class Setup extends Activity {
 				final String selectedPlayer = mListOfPlayersAdapter.getItem(position);
 				new AlertDialog.Builder(context)
 				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle("Remove player \"" + selectedPlayer + "\"?")
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				.setTitle(getResources().getString(R.string.confirm_rm_player, selectedPlayer))
+				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						mListOfPlayersAdapter.remove(selectedPlayer);
 						updateUI();
 					}
 				})
-				.setNegativeButton("No", null)
+				.setNegativeButton(R.string.no, null)
 				.create().show();
 			}
 		});
