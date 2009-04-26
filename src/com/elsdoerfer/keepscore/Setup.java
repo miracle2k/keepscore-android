@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -367,12 +368,13 @@ public class Setup extends Activity {
 	}
 
 	protected void updateAddPlayerOrStartButton() {
+		Drawable drawable = null;
 		if (addPlayerOrStartButtonIsStartMode())
-			mAddNewPlayerOrStartButton.setCompoundDrawablesWithIntrinsicBounds(
-					R.drawable.ic_menu_play_clip_small, 0, 0, 0);
+			drawable = getResources().getDrawable(R.drawable.ic_menu_play_clip_small);
 		else
-			mAddNewPlayerOrStartButton.setCompoundDrawablesWithIntrinsicBounds(
-					R.drawable.ic_menu_add_small, 0, 0, 0);
+			drawable = getResources().getDrawable(R.drawable.ic_menu_add_small);
+		mAddNewPlayerOrStartButton.setCompoundDrawablesWithIntrinsicBounds(
+				drawable, null, null, null);
 	}
 
 	protected void updateUI() {
