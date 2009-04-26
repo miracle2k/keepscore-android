@@ -272,8 +272,9 @@ public class Setup extends Activity {
 		case CLEAR_GAMES_ID:
 			new AlertDialog.Builder(this)
 			.setIcon(android.R.drawable.ic_dialog_alert)
-			.setTitle("This will permanently remove all saved sessions. Are you sure?")
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			.setTitle(R.string.clear_sessions)
+			.setMessage(R.string.confirm_rm_all_sessions)
+			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					mDb.clearSessions();
 					mExistingSessionsAdapter.getCursor().requery();

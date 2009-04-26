@@ -43,7 +43,7 @@
 				android:layout_marginLeft="10dp"
 				android:layout_marginRight="10dp"
 				android:gravity="center"
-				android:text="Add new scores" />
+				android:text="@string/add_new_scores" />
 		</TableRow>
 	</TableLayout>
 </ScrollView>
