@@ -17,13 +17,14 @@
 		android:layout_height="0dip"
 		android:layout_weight="0"
 	    />
-	<!-- Bottom and Right looks better without margin, there is already some space there. -->
+	<!-- Bottom and Right looks better without/with smaller margin, there is already some space there. -->
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="4dp"
 		android:layout_marginLeft="4dp"
+		android:layout_marginRight="2dp"
 		>
 		<!-- Would be nice if full screen IME could ADD and CLOSE on
 		     enter/button; the defaults apparently can only either CLOSE
