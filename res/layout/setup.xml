@@ -25,6 +25,9 @@
 		android:layout_marginTop="4dp"
 		android:layout_marginLeft="4dp"
 		>
+		<!-- Would be nice if full screen IME could ADD and CLOSE on
+		     enter/button; the defaults apparently can only either CLOSE
+		     or NEXT. For now, we disable full screen IME mode. -->
 		<EditText
 		 	android:id="@+id/new_player_name"
 		 	android:hint="@string/enter_new_player"
@@ -32,6 +35,8 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:capitalize="words"
+			android:inputType="textCapWords|textPersonName"
+			android:imeOptions="actionDone|flagNoExtractUi"
 		/>
 		<Button
 			android:id="@+id/add_new_player_or_start"
