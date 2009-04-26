@@ -2,6 +2,7 @@
     * Fixed: Individual sessions can now be deleted correctly.
     * Improved ENTER key focus behavior, added TAB focus jumping.
     * Added icons.
+    * Various other minor cosmetic changes.
     * German localization.
 
 1.0.0 (2009-01-30)
