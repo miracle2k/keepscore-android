@@ -3,53 +3,56 @@
 - The session list in landscape mode should put the timestamp
   to the right of the session label rather than the bottom,
   to conserve space. However, due to a bug in Android that is
-  not quite as simple as it should be. See the comment in 
+  not quite as simple as it should be. See the comment in
   "res/layout-land/session_list_item.xml" for more information.
-  
+
 - Add an about menu with version information.
 
 - Custom labels for the sessions (Nicolas Gramlich on SlideME).
 
-- Toggle table view to show the direct scores for each round 
+- Toggle table view to show the direct scores for each round
   rather than the current sum (Nicolas Gramlich on SlideME).
-  
-- To make the app more generic and usable for a greater variety 
+
+- To make the app more generic and usable for a greater variety
   of games, add options to:
-  
-    - Not disable the last players edit field, e.g. allow 
+
+    - Not disable the last players edit field, e.g. allow
       unbalanced rounds.
-      
+
     - Not automatically provide default values for the other
       players, but rather default them to 0 (so the user can
       add a new round by simply entering the scores for those
       players who's scores need changing).
-      
-      Allowing 0-rounds probably is also a good idea, there 
+
+      Allowing 0-rounds probably is also a good idea, there
       might be games where this makes sense.
-    
-    - Not fill an edit with the value of the last edit field 
+
+    - Not fill an edit with the value of the last edit field
       when entering. For some games, this might make things
       more complicated.
-      
+
   All those options should be per-session, so that different
-  games can use different settings. There should also be 
+  games can use different settings. There should also be
   default settings, so that players who always play a specific
   game who's requirementsdo not match the system defaults do
   not have to change them on every new game.
-  
+
 - Improve input options:
-    
-    - Swiping an edit field horizontally  could change the 
+
+    - Swiping an edit field horizontally  could change the
       sign (i.e. *-1)
-      
+
     - Double tapping could clear a field.
-    
+
     - "Clear current input" option on game screen to clear out all
-      score edits and quickly begin new. This could also be 
+      score edits and quickly begin new. This could also be
       implemented using a gesture.
-      
-    - Remember the X previously used or most commonly used scores 
+
+    - Remember the X previously used or most commonly used scores
       and offer them through a context menu. Possible even better
       would be a dropdown.
-      
+
+ - Remember X previously used player names and offer them through a
+   context menu or dropdown.
+
 - An help screen is needed to explain the above options.
