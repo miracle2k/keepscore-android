@@ -10,18 +10,6 @@
 		android:text="@string/new_game"
 		style="@style/Header"
 		/>
-	<Button
-		android:id="@+id/start_game"
-		android:text="@string/start_game"
-		android:visibility="gone"
-		android:layout_gravity="center"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="25dp"
-		android:layout_marginRight="25dp"
-		android:layout_marginTop="25dp"
-		android:layout_marginBottom="5dp"
-		/>
 
 	<ListView
 		android:id="@+id/existing_players"
@@ -46,11 +34,11 @@
 			android:capitalize="words"
 		/>
 		<Button
-			android:id="@+id/add_new_player"
+			android:id="@+id/add_new_player_or_start"
 			android:layout_gravity="right"
 			android:layout_width="wrap_content"
 			android:layout_height="fill_parent"
-			android:drawableLeft="@drawable/ic_menu_add_small"
+			android:drawableLeft="@drawable/ic_menu_play_clip_small"
 			/>
 	</LinearLayout>
 

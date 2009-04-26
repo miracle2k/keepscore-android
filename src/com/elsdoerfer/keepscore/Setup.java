@@ -29,6 +29,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -52,8 +54,7 @@ public class Setup extends Activity {
 	// views
 	protected ListView mExistingPlayersList;
 	protected EditText mNewPlayerNameText;
-	protected Button mAddNewPlayerButton;
-	protected Button mStartNewGameButton;
+	protected Button mAddNewPlayerOrStartButton;
 	protected LinearLayout mExistingSessionsPanel;
 	protected ListView mExistingSessionsList;
 
@@ -88,8 +89,7 @@ public class Setup extends Activity {
 		// get views
 		mExistingPlayersList = (ListView)findViewById(R.id.existing_players);
 		mNewPlayerNameText = (EditText)findViewById(R.id.new_player_name);
-		mAddNewPlayerButton = (Button)findViewById(R.id.add_new_player);
-		mStartNewGameButton = (Button)findViewById(R.id.start_game);
+		mAddNewPlayerOrStartButton = (Button)findViewById(R.id.add_new_player_or_start);
 		mExistingSessionsPanel = (LinearLayout)findViewById(R.id.existing_sessions);
 		mExistingSessionsList = (ListView)findViewById(R.id.existing_sessions_list);
 
@@ -159,23 +159,53 @@ public class Setup extends Activity {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
-					mAddNewPlayerButton.performClick();
+					// For now, ENTER cannot start a game, only add a new
+					// player. First, we don't want it to happen by
+					// accident. Second, for now for some reason pressing
+					// ENTER would always start a new game, if we were to
+					// simulate a click on the addNewPlayerOrStartButton
+					// here (even with a onScreen keyboard). Would need to
+					// be investigated.
+					newPlayerNameSubmit();
 					return true;
 				}
 				return false;
 			}
 		});
+		mNewPlayerNameText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				updateAddPlayerOrStartButton();
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+		});
 
-		mAddNewPlayerButton.setOnClickListener(new View.OnClickListener() {
+		mAddNewPlayerOrStartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String playerName = mNewPlayerNameText.getText().toString().trim();
-				if (playerName.length()==0)
-					return;
-				addPlayerToNewGame(playerName);
-				// clear field for new player
-				mNewPlayerNameText.setText("");
-				mNewPlayerNameText.requestFocus();
+				// "add a new player" mode
+				if (!addPlayerOrStartButtonIsStartMode()) {
+					newPlayerNameSubmit();
+				}
+
+				// "start the game" mode
+				else {
+					long newId = mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
+					existingSessionListCursor.requery();
+					continueSession(newId);
+
+					// TODO: The user will still see how the interface resets,
+					// while the new activity is being loaded - not particularly
+					// nice. Do something about it.
+					mNewPlayerNameText.setText("");
+					mListOfPlayersAdapter.clear();
+					updateUI();
+				}
 			}
 		});
 
@@ -194,22 +224,6 @@ public class Setup extends Activity {
 				})
 				.setNegativeButton("No", null)
 				.create().show();
-			}
-		});
-
-		mStartNewGameButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				long newId = mDb.createSession((String[]) mListOfPlayersArray.toArray(new String[0]));
-				existingSessionListCursor.requery();
-				continueSession(newId);
-
-				// TODO: The user will still see how the interface resets,
-				// while the new activity is being loaded - not particularly
-				// nice. Do something about it.
-				mNewPlayerNameText.setText("");
-				mListOfPlayersAdapter.clear();
-				updateUI();
 			}
 		});
 
@@ -311,6 +325,16 @@ public class Setup extends Activity {
 		});
 	}
 
+	private void newPlayerNameSubmit() {
+		String playerName = mNewPlayerNameText.getText().toString().trim();
+		if (playerName.length()==0)
+			return;
+		addPlayerToNewGame(playerName);
+		// clear field for new player
+		mNewPlayerNameText.setText("");
+		mNewPlayerNameText.requestFocus();
+	}
+
 	protected void addPlayerToNewGame(String playerName) {
 		mListOfPlayersAdapter.add(playerName);
 		updateUI();
@@ -331,6 +355,24 @@ public class Setup extends Activity {
 	protected void sessionListSelectionChanged() {
 		if (mDeleteGameItem!=null)
 			mDeleteGameItem.setEnabled(mExistingSessionsList.getSelectedItem() != null);
+	}
+
+	/**
+	 * Returns true if the button is in start mode, false otherwise.
+	 */
+	protected boolean addPlayerOrStartButtonIsStartMode() {
+		// allow to start a new game only if min. 2 players
+		return (mNewPlayerNameText.getText().toString().length() == 0 &&
+				mListOfPlayersAdapter.getCount() >= 2);
+	}
+
+	protected void updateAddPlayerOrStartButton() {
+		if (addPlayerOrStartButtonIsStartMode())
+			mAddNewPlayerOrStartButton.setCompoundDrawablesWithIntrinsicBounds(
+					R.drawable.ic_menu_play_clip_small, 0, 0, 0);
+		else
+			mAddNewPlayerOrStartButton.setCompoundDrawablesWithIntrinsicBounds(
+					R.drawable.ic_menu_add_small, 0, 0, 0);
 	}
 
 	protected void updateUI() {
@@ -380,10 +422,6 @@ public class Setup extends Activity {
 			mClearPlayersItem.setVisible(editingPlayers);
 		}
 
-		// allow to start a new game only if min. 2 players
-		if (mListOfPlayersAdapter.getCount() >= 2)
-			mStartNewGameButton.setVisibility(View.VISIBLE);
-		else
-			mStartNewGameButton.setVisibility(View.GONE);
+		updateAddPlayerOrStartButton();
 	}
 }
