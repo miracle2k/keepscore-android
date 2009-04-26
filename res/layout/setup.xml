@@ -29,11 +29,13 @@
 		android:layout_height="0dip"
 		android:layout_weight="0"
 	    />
+	<!-- Bottom and Right looks better without margin, there is already some space there. -->
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="5dp"
+		android:layout_marginTop="4dp"
+		android:layout_marginLeft="4dp"
 		>
 		<EditText
 		 	android:id="@+id/new_player_name"
