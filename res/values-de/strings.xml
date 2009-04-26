@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Keep Score</string>
+	<string name="app_description">Zählt den Punktestand bei einem Karten- oder Brettspiel mit.</string>
+
+	<string name="yes">Ja</string>
+	<string name="no">Nein</string>
+
+	<string name="new_game">Neues Spiel</string>
+	<string name="existing_sessions">Frühere Spiele</string>
+	<string name="continue_session">Spiel fortsetzen</string>
+	<string name="delete_session">Spiel löschen</string>
+	<string name="clear_sessions">Alle Spiele löschen</string>
+	<string name="confirm_rm_all_sessions">Alle gespeicherten Spiele werden unwiderruflich gelöscht. Sicher?</string>
+	<string name="clear_players">Alle Spieler entfernen</string>
+	<string name="enter_new_player">Neuen Spieler eingeben</string>
+	<string name="submit_short">&gt;</string>
+	<string name="start_game">Spiel starten</string>
+
+	<string name="never">Nie</string>
+	<string name="just_now">Gerade eben</string>
+	<string name="bind_days">vor %s Tagen</string>
+	<string name="bind_hours">vor %s Tagen</string>
+	<string name="bind_minutes">vor %s Minuten</string>
+
+	<string name="add_new_scores">Punkte hinzufügen</string>
+	<string name="not_a_valid_number">Ungültig</string>
+	<string name="remove_last_row">Letzte Reihe entfernen</string>
+	<string name="end_game">Spiel beenden</string>
+</resources>
