@@ -1,0 +1,7 @@
+1.1 (X)
+    * Fixed: Individual sessions can now be deleted correctly.
+    * Improved ENTER key focus behaviour, added TAB focus jumping.
+    * Added icons.
+
+1.0.0 (2009-01-30)
+    Initial release.
