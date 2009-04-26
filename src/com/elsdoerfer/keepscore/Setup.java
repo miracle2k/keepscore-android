@@ -334,6 +334,9 @@ public class Setup extends Activity {
 		// clear field for new player
 		mNewPlayerNameText.setText("");
 		mNewPlayerNameText.requestFocus();
+		// Need to call this to workaround 1.0 bug where setText() does
+		// not cause the TextWatcher onChange events.
+		updateAddPlayerOrStartButton();
 	}
 
 	protected void addPlayerToNewGame(String playerName) {
