@@ -3,9 +3,6 @@
 	<string name="app_name">Keep Score</string>
 	<string name="app_description">Keep track of player scores during a card game.</string>
 
-	<string name="yes">Yes</string>
-	<string name="no">No</string>
-
 	<string name="new_game">New Game</string>
 	<string name="existing_sessions">Previous Games</string>
 	<string name="continue_session">Continue Game</string>

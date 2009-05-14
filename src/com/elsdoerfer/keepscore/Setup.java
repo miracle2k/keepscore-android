@@ -217,13 +217,13 @@ public class Setup extends Activity {
 				new AlertDialog.Builder(context)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle(getResources().getString(R.string.confirm_rm_player, selectedPlayer))
-				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						mListOfPlayersAdapter.remove(selectedPlayer);
 						updateUI();
 					}
 				})
-				.setNegativeButton(R.string.no, null)
+				.setNegativeButton(android.R.string.no, null)
 				.create().show();
 			}
 		});
@@ -289,7 +289,7 @@ public class Setup extends Activity {
 			.setIcon(android.R.drawable.ic_dialog_alert)
 			.setTitle(R.string.clear_sessions)
 			.setMessage(R.string.confirm_rm_all_sessions)
-			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+			.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					mDb.clearSessions();
 					mExistingSessionsAdapter.getCursor().requery();
