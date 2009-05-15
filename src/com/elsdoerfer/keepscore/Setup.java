@@ -31,6 +31,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -64,6 +65,7 @@ public class Setup extends Activity {
 	public static final int CONTINUE_GAME_ID = Menu.FIRST + 1;
 	public static final int DELETE_GAME_ID = Menu.FIRST + 2;
 	public static final int CLEAR_GAMES_ID = Menu.FIRST + 3;
+	public static final int NAME_GAME_ID = Menu.FIRST + 4;
 	protected MenuItem mClearPlayersItem;
 	protected MenuItem mDeleteGameItem;
 	protected MenuItem mClearGamesItem;
@@ -317,6 +319,15 @@ public class Setup extends Activity {
 				return true;
 			}
 		});
+		String sessionName = mDb.getSessionName(info.id);
+		menu.add(!sessionName.equals("") ? R.string.rename_session : R.string.name_session).
+				 	setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				renameSession(info.id);
+				return true;
+			}
+		});
 		menu.add(R.string.delete_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
@@ -348,6 +359,40 @@ public class Setup extends Activity {
 		Intent intent = new Intent(this, Game.class);
 		intent.putExtra(DbAdapter.SESSION_ID_KEY, id);
 		startActivity(intent);
+	}
+
+	protected void renameSession(final long id) {
+		final EditText input = new EditText(this);
+
+		// TODO: Currently, this dialog does not persist across
+		// orientation changes. Fix.
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.custom_session_name);
+		builder.setPositiveButton(android.R.string.ok,
+			new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					String value = input.getText().toString();
+					mDb.setSessionName(id, value);
+					mExistingSessionsAdapter.getCursor().requery();
+					updateUI();
+				}
+		});
+		builder.setNegativeButton(android.R.string.cancel,
+			new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {}
+			});
+
+		// TODO: Pressing ENTER in the edit field will jump to the Cancel
+		// button if the caret position is above it (i.e. the text entered
+		// long enough). This seems to be the standard behavior though,
+		// and can also be seen in the Bluetooth "Device name" option of
+		// the builtin settings app.
+		AlertDialog alert = builder.create();
+		input.setText(mDb.getSessionName(id));
+		input.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+		alert.setView(input, 10, 10, 10, 7);
+		input.selectAll();
+		alert.show();
 	}
 
 	protected void deleteSession(long id) {

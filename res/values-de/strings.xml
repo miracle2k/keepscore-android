@@ -6,6 +6,9 @@
 	<string name="new_game">Neues Spiel</string>
 	<string name="existing_sessions">Frühere Spiele</string>
 	<string name="continue_session">Spiel fortsetzen</string>
+	<string name="name_session">Namen geben</string>
+	<string name="rename_session">Spiel umbenennen</string>
+	<string name="custom_session_name">Eigener Name</string>
 	<string name="delete_session">Spiel löschen</string>
 	<string name="clear_sessions">Alle Spiele löschen</string>
 	<string name="confirm_rm_all_sessions">Alle gespeicherten Spiele werden unwiderruflich gelöscht. Sicher?</string>

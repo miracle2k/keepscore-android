@@ -6,6 +6,9 @@
 	<string name="new_game">New Game</string>
 	<string name="existing_sessions">Previous Games</string>
 	<string name="continue_session">Continue Game</string>
+	<string name="name_session">Assign Name</string>
+	<string name="rename_session">Rename Game</string>
+	<string name="custom_session_name">Custom Name</string>
 	<string name="delete_session">Delete Game</string>
 	<string name="clear_sessions">Clear All Games</string>
 	<string name="confirm_rm_all_sessions">This will permanently remove all saved sessions. Are you sure?</string>

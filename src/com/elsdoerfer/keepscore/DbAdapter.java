@@ -33,6 +33,7 @@ public class DbAdapter {
 
 	public static String SESSION_TABLE = "session";
 	public static String SESSION_ID_KEY = "_id";
+	public static String SESSION_NAME_KEY = "name";
 	public static String SESSION_LAST_PLAYED_AT_KEY = "last_played_at";
 	public static String SESSION_LABEL_VKEY = "label";
 
@@ -51,25 +52,26 @@ public class DbAdapter {
 	public static String SCORE_CREATED_AT_KEY = "created_at";
 
 	private static final String[] DATABASE_CREATE = {
-		"CREATE TABLE session (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"CREATE TABLE session (_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+		"                      name TEXT NOT NULL," +
 		"                      last_played_at UNSIGNED INTEGER NOT NULL);",
 
-		"CREATE TABLE player (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"CREATE TABLE player (_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"                     session_id INTEGER NOT NULL," +
 		"                     name TEXT NOT NULL," +
 		"                     idx INTEGER NOT NULL);",
 
-		"CREATE TABLE score (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"CREATE TABLE score (_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"                    session_id INTEGER NOT NULL," +
 		"                    row INTEGER NOT NULL," +
 		"                    player_index INTEGER NOT NULL," +
 		"                    value INTEGER NOT NULL," +
-	"                    created_at UNSIGNED INTEGER NOT NULL);"};
+		"                    created_at UNSIGNED INTEGER NOT NULL);"};
 
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static final String DATABASE_NAME = "data";
-		private static final int DATABASE_VERSION = 1;
+		private static final int DATABASE_VERSION = 2;
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -89,7 +91,12 @@ public class DbAdapter {
 		}
 
 		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			if (oldVersion == 1) {
+				// upgrade to version 2
+				db.execSQL("ALTER TABLE session ADD COLUMN name TEXT NOT NULL DEFAULT \"\";");
+			}
+		}
 	}
 
 
@@ -143,8 +150,11 @@ public class DbAdapter {
 	public Cursor fetchAllSessions() {
 		// TODO: this should probably use the table and column name constants.
 		return mDb.rawQuery(
-				"SELECT _id, GROUP_CONCAT(name, ', ') AS label, last_played_at "+
-				"FROM (SELECT session._id AS _id, last_played_at, player.name AS name FROM session "+
+				"SELECT _id, IFNULL(NULLIF(session_name, ''), "+
+				"       GROUP_CONCAT(player_name, ', ')) AS label, last_played_at "+
+				"FROM (SELECT session._id AS _id, session.name as session_name, "+
+				"             last_played_at, player.name AS player_name "+
+				"      FROM session "+
 				"      LEFT OUTER JOIN player ON session._id = player.session_id "+
 				"      ORDER BY player.idx ASC) " +
 				"GROUP BY _id "+
@@ -172,6 +182,26 @@ public class DbAdapter {
 		ContentValues args = new ContentValues();
 		args.put(SESSION_LAST_PLAYED_AT_KEY, new Date().getTime());
 		return mDb.update(SESSION_TABLE, args, SESSION_ID_KEY + "=" + sessionId, null) > 0;
+	}
+
+	/**
+	 * Assign a manual session name.
+	 *
+	 * @param sessionId
+	 * @param newLabel
+	 */
+	public boolean setSessionName(long sessionId, String newLabel) {
+		ContentValues args = new ContentValues();
+		args.put(SESSION_NAME_KEY, newLabel);
+		return mDb.update(SESSION_TABLE, args, SESSION_ID_KEY + "=" + sessionId, null) > 0;
+	}
+
+	public String getSessionName(long sessionId) {
+		Cursor cursor = mDb.query(SESSION_TABLE, new String[]{SESSION_NAME_KEY},
+				SESSION_ID_KEY+"=?", new String[]{String.valueOf(sessionId)},
+				null, null, null);
+		cursor.moveToFirst();
+		return cursor.getString(0);
 	}
 
 	public void addSessionScores(long sessionId, Integer[] scores) {

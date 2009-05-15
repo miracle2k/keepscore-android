@@ -8,8 +8,6 @@
 
 - Add an about menu with version information.
 
-- Custom labels for the sessions (Nicolas Gramlich on SlideME).
-
 - Toggle table view to show the direct scores for each round
   rather than the current sum (Nicolas Gramlich on SlideME).
 
