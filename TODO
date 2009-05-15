@@ -56,3 +56,8 @@
    context menu or dropdown.
 
 - An help screen is needed to explain the above options.
+
+- Add a confirmation query for "Delete game".
+
+- Add a "start game" item to the menu, some people have trouble
+  noticing the button behaviour change.
