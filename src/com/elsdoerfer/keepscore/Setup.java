@@ -114,7 +114,6 @@ public class Setup extends Activity {
 					new String[] { DbAdapter.SESSION_LABEL_VKEY, DbAdapter.SESSION_LAST_PLAYED_AT_KEY },
 					new int[] { android.R.id.text1, android.R.id.text2 });
 		mExistingSessionsAdapter.setViewBinder(new ViewBinder() {
-			@Override
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex)  {
 				int lastPlayedIndex = cursor.getColumnIndex(DbAdapter.SESSION_LAST_PLAYED_AT_KEY);
 				if (columnIndex == lastPlayedIndex) {
@@ -159,7 +158,6 @@ public class Setup extends Activity {
 		this.registerForContextMenu(mExistingSessionsList);
 
 		mNewPlayerNameText.setOnKeyListener(new View.OnKeyListener() {
-			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
 					// For now, ENTER cannot start a game, only add a new
@@ -176,20 +174,16 @@ public class Setup extends Activity {
 			}
 		});
 		mNewPlayerNameText.addTextChangedListener(new TextWatcher() {
-			@Override
 			public void afterTextChanged(Editable s) {
 				updateAddPlayerOrStartButton();
 			}
-			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {}
-			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {}
 		});
 
 		mAddNewPlayerOrStartButton.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				// "add a new player" mode
 				if (!addPlayerOrStartButtonIsStartMode()) {
@@ -213,7 +207,6 @@ public class Setup extends Activity {
 		});
 
 		mExistingPlayersList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
 				final String selectedPlayer = mListOfPlayersAdapter.getItem(position);
 				new AlertDialog.Builder(context)
@@ -231,19 +224,16 @@ public class Setup extends Activity {
 		});
 
 		mExistingSessionsList.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
 				sessionListSelectionChanged();
 			}
-			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				sessionListSelectionChanged();
 			}
 		});
 
 		mExistingSessionsList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				continueSession(id);
@@ -313,7 +303,6 @@ public class Setup extends Activity {
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 		menu.setHeaderTitle(((TextView)info.targetView.findViewById(android.R.id.text1)).getText());
 		menu.add(R.string.continue_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				continueSession(info.id);
 				return true;
@@ -322,14 +311,12 @@ public class Setup extends Activity {
 		String sessionName = mDb.getSessionName(info.id);
 		menu.add(!sessionName.equals("") ? R.string.rename_session : R.string.name_session).
 				 	setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				renameSession(info.id);
 				return true;
 			}
 		});
 		menu.add(R.string.delete_session).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				deleteSession(info.id);
 				return true;

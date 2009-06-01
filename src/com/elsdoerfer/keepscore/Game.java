@@ -66,7 +66,7 @@ public class Game extends Activity {
 	protected TableRow mFooterRow;
 	protected EditText[] mNewScoreEdits;
 
-	DbAdapter mDb = new DbAdapter(this);
+	DbAdapter mDb = new DbAdapter(this);  // TODO: init with null?
 
 	// the session we are currently playing
 	protected Long mSessionId;
@@ -183,7 +183,6 @@ public class Game extends Activity {
 
 			});
 			edit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
 				public void onFocusChange(View v, boolean hasFocus) {
 					// When the user enters an edit field, we prefill
 					// it with the value of the previous field the user
@@ -252,7 +251,6 @@ public class Game extends Activity {
 
 		// setup event handlers
 		mAddNewScoresButton.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				// Add new row of scores.
 				// We trust that mNewScoreValues contains no null values.
@@ -333,7 +331,7 @@ public class Game extends Activity {
 		mScoreMatrix.add(scores);
 
 		// "scores" is the latest change, but we need to display
-		// the  current sum for each player, so create an error
+		// the  current sum for each player, so create an array
 		// that contains the updated sum values.
 		Integer[] currentSums = new Integer[scores.length];
 		for (int i=0; i<mScoreMatrix.size(); i++) {
