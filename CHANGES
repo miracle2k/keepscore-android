@@ -1,5 +1,7 @@
-2.0.0 (2009-xx-xx)
+1.2.0 (2009-11-19)
 	* Support custom session labels.
+	* Eclair-ready (compiled against 2.0).
+	* Support different screen sizes.
 
 1.1.0 (2009-04-26)
     * Fixed: Individual sessions can now be deleted correctly.
