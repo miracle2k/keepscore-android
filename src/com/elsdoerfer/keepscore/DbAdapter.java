@@ -131,6 +131,7 @@ public class DbAdapter {
 		try {
 			ContentValues values = new ContentValues();
 			values.put(SESSION_LAST_PLAYED_AT_KEY, new Date().getTime());
+			values.put(SESSION_NAME_KEY, "");
 			long session_id = mDb.insert(SESSION_TABLE, null, values);
 			for (int i=0; i<players.length; i++) {
 				values = new ContentValues();
