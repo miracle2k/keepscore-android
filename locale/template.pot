@@ -1,0 +1,118 @@
+# Translations template for PROJECT.
+# Copyright (C) 2009 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2009-11-30 02:01+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.0dev-r482\n"
+
+msgctxt "app_name"
+msgid "Keep Score"
+msgstr ""
+
+msgctxt "app_description"
+msgid "Keep track of player scores during a card game."
+msgstr ""
+
+msgctxt "new_game"
+msgid "New Game"
+msgstr ""
+
+msgctxt "existing_sessions"
+msgid "Previous Games"
+msgstr ""
+
+msgctxt "continue_session"
+msgid "Continue Game"
+msgstr ""
+
+msgctxt "name_session"
+msgid "Assign Name"
+msgstr ""
+
+msgctxt "rename_session"
+msgid "Rename Game"
+msgstr ""
+
+msgctxt "custom_session_name"
+msgid "Custom Name"
+msgstr ""
+
+msgctxt "delete_session"
+msgid "Delete Game"
+msgstr ""
+
+msgctxt "clear_sessions"
+msgid "Clear All Games"
+msgstr ""
+
+msgctxt "confirm_rm_all_sessions"
+msgid "This will permanently remove all saved sessions. Are you sure?"
+msgstr ""
+
+msgctxt "clear_players"
+msgid "Clear Players"
+msgstr ""
+
+msgctxt "confirm_rm_player"
+msgid "Remove player \\\"%1$s\\\"?"
+msgstr ""
+
+msgctxt "enter_new_player"
+msgid "Enter new player"
+msgstr ""
+
+msgctxt "submit_short"
+msgid ">"
+msgstr ""
+
+msgctxt "never"
+msgid "Never"
+msgstr ""
+
+msgctxt "just_now"
+msgid "Just Now"
+msgstr ""
+
+#, python-format
+msgctxt "bind_days"
+msgid "%s days ago"
+msgstr ""
+
+#, python-format
+msgctxt "bind_hours"
+msgid "%s hours ago"
+msgstr ""
+
+#, python-format
+msgctxt "bind_minutes"
+msgid "%s minutes ago"
+msgstr ""
+
+msgctxt "add_new_scores"
+msgid "Add scores"
+msgstr ""
+
+msgctxt "not_a_valid_number"
+msgid "Invalid"
+msgstr ""
+
+msgctxt "remove_last_row"
+msgid "Remove Last"
+msgstr ""
+
+msgctxt "end_game"
+msgid "End Game"
+msgstr ""
+
